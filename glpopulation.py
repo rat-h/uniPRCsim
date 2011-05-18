@@ -72,8 +72,8 @@ class glpopulation:
 		if item.data(1,QtCore.Qt.UserRole) != self.object: return
 		popid, ok = item.data(2,QtCore.Qt.UserRole).toInt()
 		if not ok: return
-		if len(self.poplst) <= prcid : return
-		del self.poplst[popid].nrn
+		if len(self.poplst) <= popid : return
+		#del self.poplst[popid].nrn
 		self.poplst[popid].id = None
 		self.ischanged	= True
 	def click(self):
