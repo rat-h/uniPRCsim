@@ -5,7 +5,7 @@ import zipfile
 
 #nonlocal BASEDIR
 global BASEDIR
-BASEDIR="/home/rth/projects/uniPRCsim-bytecode/"
+BASEDIR="/home/rth/projects/uniPRCsim/"
 
 
 if not BASEDIR:
