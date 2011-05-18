@@ -4,7 +4,7 @@ import uniprcsimversion
 import zipfile
 
 #nonlocal BASEDIR
-global BASEDIR
+#global BASEDIR
 BASEDIR="/home/rth/projects/uniPRCsim/"
 
 
