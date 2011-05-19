@@ -171,7 +171,7 @@ class glmodel:
 		self.name = "<----->"
 		if len(filename) == 0: return
 		dirname,self.filename = os.path.split( filename.toUtf8().data() )
-		os.chdir(dirname)
+		if len(dirname) > 2 :os.chdir(dirname)
 		pparser = self.parcerpxm(model=self)
 		parser=make_parser()
 		parser.setContentHandler(pparser)
@@ -207,7 +207,7 @@ class glmodel:
 		filename = QtGui.QFileDialog.getSaveFileName(self.parent, 'Open file', '', "Prc Xml Model(*.pxm)")
 		if filename.length() < 1: return
 		dirname,self.filename = os.path.split( filename.toUtf8().data() )
-		os.chdir(dirname)
+		if len(dirname) > 2 :os.chdir(dirname)
 		self.parent.setWindowTitle(self.name+' :: uniPRCsim')
 		self.savemodel()
 	def close(self):
