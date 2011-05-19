@@ -1,7 +1,5 @@
 #! /usr/bin/python
-import sys, os
-import uniprcsimversion
-import zipfile
+import sys, os, zipfile
 
 #nonlocal BASEDIR
 #global BASEDIR
@@ -22,6 +20,7 @@ for arg in sys.argv[1:]:
 		sys.stderr.write("%s --update updatefile\n\n"%sys.arg[0])
 		sys.exit(0)
 	if arg == "--version" or arg =="-v" or arg == "/version" or arg == "/v" or arg == "/V":
+		import uniprcsimversion
 		sys.stderr.write("\n\n" + uniprcsimversion.getlongversion() +"\n\n")
 		sys.exit(0)
 	if arg == "--update" or arg == "-u" or arg == "/update" or arg == "/u" or arg == "-U" or arg =="/U":

@@ -2,6 +2,7 @@ import sys
 from PyQt4 import QtGui, QtCore
 import glmodel
 import icons
+import uniprcsimversion
 
 class glmainwnd(QtGui.QMainWindow):
 	def __init__(self):
@@ -30,12 +31,22 @@ class glmainwnd(QtGui.QMainWindow):
 		exit.setShortcut('Ctrl+Q')
 		exit.setStatusTip('Exit application')
 		self.connect(exit, QtCore.SIGNAL('triggered()'), self.mclose)
+		#About DLG
+		about = QtGui.QAction(QtGui.QIcon(':/uniPRCsim.png'), 'About uniPRCsim', self)
+		about.setStatusTip('About uniPRCsim')
+		self.connect(about, QtCore.SIGNAL('triggered()'), self.about)
+
 		file = menubar.addMenu('&File')
 		self.model = glmodel.glmodel(parent = self, mainwnd = self, menubar = menubar, toolbar=toolbar, filemenu=file)
 		file.addSeparator()
 		file.addAction(exit)
+		help = menubar.addMenu('&Help')
+		help.addAction(about)
 		
 
+	def about(self):
+		QtGui.QMessageBox.about(self,"About uniPRCsim",	uniprcsimversion.getlongversion())
+		return
 		
 	def mclose(self):
 		self.model.close()
