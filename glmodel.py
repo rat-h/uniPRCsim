@@ -1,13 +1,8 @@
 from PyQt4 import QtGui, QtCore
 from xml.sax import handler, make_parser
-import glprc
-import glrprc
-import glpopulation
-import glneurons
-import glconnection
-import gloutput
-import glrun
-import icons
+import glprc, glrprc, glpopulation, glneurons, glconnection
+import gloutput, glrun, icons
+import os
 
 class glmodel:
 	class parcerpxm(handler.ContentHandler):
@@ -175,7 +170,8 @@ class glmodel:
 	def readfile(self, filename):
 		self.name = "<----->"
 		if len(filename) == 0: return
-		self.filename	= filename.toUtf8().data()
+		dirname,self.filename = os.path.split( filename.toUtf8().data() )
+		os.chdir(dirname)
 		pparser = self.parcerpxm(model=self)
 		parser=make_parser()
 		parser.setContentHandler(pparser)
@@ -210,7 +206,8 @@ class glmodel:
 	def savemodelas(self):
 		filename = QtGui.QFileDialog.getSaveFileName(self.parent, 'Open file', '', "Prc Xml Model(*.pxm)")
 		if filename.length() < 1: return
-		self.filename	= filename.toUtf8().data()
+		dirname,self.filename = os.path.split( filename.toUtf8().data() )
+		os.chdir(dirname)
 		self.parent.setWindowTitle(self.name+' :: uniPRCsim')
 		self.savemodel()
 	def close(self):
@@ -237,15 +234,32 @@ class glmodel:
 
 	def runmodel(self):
 		if not self.isactive: return
-		ischanged = self.ischanged | reduce(lambda x,y: x+y.ischanged, self.registered, False)
-		if ischanged:
+		saveflg = self.ischanged
+		for comp in self.registered:
+			saveflg |= comp.ischanged
+		####DB####
+		#for comp in self.registered:
+		#	print comp.object,": ischanged=",comp.ischanged
+		##########
+		if saveflg:
 			msgBox = QtGui.QMessageBox.information(self.parent,"uniPRCsim The Model is Active.","The model \"%s\" has been modified.\nDo you want to save current model?"%self.name,
 				QtGui.QMessageBox.Save, QtGui.QMessageBox.Discard, QtGui.QMessageBox.Cancel)
 			if msgBox == QtGui.QMessageBox.Cancel: return
 			elif msgBox == QtGui.QMessageBox.Save:
 				self.savemodel()
 				self.ischanged = False
-		
+		if len(self.glprc.prclst) == 0 and len(self.glrprc.prclst) == 0:
+			QtGui.QMessageBox.critical(self.parent,"Critical ERROR!"," You should have at least one PRC function! ",QtGui.QMessageBox.Ok,0)
+			return
+		if len(self.glpopulation.poplst) == 0 and len(self.glneurons.nrnlst) == 0:
+			QtGui.QMessageBox.critical(self.parent,"Critical ERROR!"," You should have at least one Population or neuron set! ",QtGui.QMessageBox.Ok,0)
+			return
+		if len(self.glconnection.cnntlst) == 0:
+			QtGui.QMessageBox.critical(self.parent,"Critical ERROR!"," You should have at least one connection! ",QtGui.QMessageBox.Ok,0)
+			return
+		if len(self.gloutput.outlst) == 0:
+			QtGui.QMessageBox.critical(self.parent,"Critical ERROR!"," You should have at least one Output stream! ",QtGui.QMessageBox.Ok,0)
+			return
 		runer = glrun.glrun(self.name,self.filename,self.countspike.value())
 		if not runer.exec_(): return
 		self.gloutput.show()
