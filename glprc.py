@@ -268,6 +268,8 @@ class prceditor(QtGui.QDialog):
 				newprc.gsyn.append("%g"%double)
 		self.importer.gsyn=string.join(newprc.gsyn,',')
 		if self.prc != None:
+			newprc.id=self.prc.id
+			newprc.name=self.prc.name
 			del self.prc
 		self.prc = newprc
 		self.readprc()
