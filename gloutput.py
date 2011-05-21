@@ -326,7 +326,7 @@ class gloutput:
 		outid, ok = item.data(2,QtCore.Qt.UserRole).toInt()
 		if not ok: return
 		if len(self.outlst) <= outid : return
-		self.cnntlst[outid].id = None
+		self.outlst[outid].id = None
 		self.ischanged	= True
 
 	def click(self):

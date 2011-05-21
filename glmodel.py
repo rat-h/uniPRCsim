@@ -202,6 +202,7 @@ class glmodel:
 		for prog in self.registered:
 			for prn in prog.save():	fd.write("\t"+prn+"\n")
 		fd.write("</model>")
+		self.ischanged = False
 		
 	def savemodelas(self):
 		filename = QtGui.QFileDialog.getSaveFileName(self.parent, 'Open file', '', "Prc Xml Model(*.pxm)")
