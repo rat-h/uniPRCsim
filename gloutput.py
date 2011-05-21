@@ -184,6 +184,9 @@ class glraster(QtGui.QDialog):
 		self.connect(zoonout,QtCore.SIGNAL('clicked()'), self.mainwd.zoomout)
 		self.connect(close,QtCore.SIGNAL('clicked()'), self.close)
 	
+	def readfile(self,filename):
+		self.mainwd.readfile(filename)
+		self.setWindowTitle(filename + ' :: Rastrview')
 	def close(self):
 		self.accept()
 
@@ -193,7 +196,7 @@ class odoutput:
 		self.format		= ""
 		self.conn		= 0
 		self.watch		= ""
-		self.id			= -1
+		self.id			= None
 
 class outputglg(QtGui.QDialog):
 	def __init__(self, odout = None , parent=None):
@@ -356,6 +359,7 @@ class gloutput:
 	def save(self):
 		result = []
 		for out in self.outlst:
+			if out.id == None: continue
 			filename = 	self.getfilename(out)
 			prn = "<output name=\"%s\" format=\"%s\" watch=\"%s\" "%(filename,out.format, out.watch)
 			if out.conn == 0:
@@ -396,9 +400,10 @@ class gloutput:
 		for out in self.outlst:
 			if out.watch != "spikes": continue
 			if out.format != "excel": continue
+			if out.id == None: continue
 			filename = self.getfilename(out)
 			edt = glraster()
-			edt.mainwd.readfile(filename)
+			edt.readfile(filename)
 			edt.show()
 
 
