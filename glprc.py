@@ -179,6 +179,7 @@ class prceditor(QtGui.QDialog):
 		clsblButton	 = QtGui.QPushButton(QtGui.QIcon(':/close-tbl.png'),"Close Table",self)
 		insrButton	 = QtGui.QPushButton(QtGui.QIcon(':/insert-row.png'),"Insert Row",self)
 		delrButton	 = QtGui.QPushButton(QtGui.QIcon(':/remove-row.png'),"Remove Row",self)
+		sortButton   = QtGui.QPushButton(QtGui.QIcon(':/close-tbl.png'),"Resort Table",self)
 		remButton	 = QtGui.QPushButton(QtGui.QIcon(':/remove-all.png'),"Remove All",self)
 		
 		hboxU = QtGui.QHBoxLayout()
@@ -195,6 +196,7 @@ class prceditor(QtGui.QDialog):
 		hboxD.addWidget(clsblButton)
 		hboxD.addWidget(insrButton)
 		hboxD.addWidget(delrButton)
+		hboxD.addWidget(sortButton)
 		hboxD.addWidget(remButton)
 
 		vbox = QtGui.QVBoxLayout()
@@ -214,6 +216,7 @@ class prceditor(QtGui.QDialog):
 		self.connect(clsblButton, QtCore.SIGNAL('clicked()'), self.closetbl)
 		self.connect(insrButton, QtCore.SIGNAL('clicked()'), self.insertrow)
 		self.connect(delrButton, QtCore.SIGNAL('clicked()'), self.deleterow)
+		self.connect(sortButton, QtCore.SIGNAL('clicked()'), self.resort)
 		self.connect(remButton, QtCore.SIGNAL('clicked()'), self.clear)
 	def setprc(self, prc):
 		if self.prc != None: del self.prc
@@ -368,7 +371,8 @@ class prceditor(QtGui.QDialog):
 			dprc.data.append([ float(data[0]), [float(d1) for d1 in data[1] ], [float(d2) for d2 in data[2] ] ])
 		prcview = prcviewdlg(dprc,self)
 		prcview.exec_()
-		
+	def resort(self):
+		self.tbl.sortByColumn(0,QtCore.Qt.AscendingOrder)
 	def rename(self):
 		if self.prc == None:
 			self.prc = odprc()
