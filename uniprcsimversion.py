@@ -1,7 +1,7 @@
 
 MAJOR=0
 MINOR=0
-PATCH=11
+PATCH=12
 DATE="20110524"
 def getversion():
 	return "%d.%02d.%04d"%(MAJOR,MINOR,PATCH)
