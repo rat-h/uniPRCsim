@@ -4,7 +4,6 @@ import clprc
 
 class clrprc:
 	def __init__(self,object="rprc",find=None, attr={}):
-		print attr
 		self.object	=object,
 		self.name	="*****"
 		#### Test for implicit attributes:
@@ -42,6 +41,7 @@ class clrprc:
 		return ["<rprc name=\"%s\" prc=\"%s\" sd=\"%g\" sd2=\"%g\" />"%(
 			self.name, self.prc.name, self.sd, self.sd2)]
 	def getvl(self, gsyn, ph):
+#		sys.stderr.write("getvl:")
 		mu = self.prc.getvl(gsyn, ph)
 		return (
 			rnd.normalvariate(mu[0],self.sd),

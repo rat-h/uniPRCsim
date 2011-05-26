@@ -110,6 +110,7 @@ class clneurons:
 				correction = cont[1][0].prc.getvl( gsyn_sum, self.neurons[nrn][0])
 				#print self.name,": ",gsyn_sum, self.neurons[nrn][0], " ==>", correction
 				self.neurons[nrn][0] -= correction[0]	#f1 contribution (why - ?)
+				#print self.neurons[nrn][0], " ===> ", correction[0]
 				if self.f2 == "off": continue
 				elif self.f2 == "last":
 					self.neurons[nrn][1] = correction[1]	#replace f2 contribution

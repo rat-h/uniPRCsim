@@ -128,6 +128,8 @@ class cnntedt(QtGui.QDialog):
 		id = self.prc.findText(self.cnnt.prc)
 		if id < 0:id = 0
 		self.prc .setCurrentIndex(id)
+#		print "> Delay value: ", self.cnnt.delay
+#		print "> Jitter value: ", self.cnnt.jitter
 		if self.cnnt.delay < 0.0:
 			self.delck.setCheckState(QtCore.Qt.Unchecked)
 			self.deledit.setVisible(False)
@@ -140,8 +142,8 @@ class cnntedt(QtGui.QDialog):
 			self.jitteredit.setVisible(False)
 			self.deledit.setValue(self.cnnt.delay)
 		else :
-			self.delck.setCheckState(QtCore.Qt.Checked)
 			self.jitterck.setCheckState(QtCore.Qt.Checked)
+			self.delck.setCheckState(QtCore.Qt.Checked)
 			self.deledit.setVisible(True)
 			self.jitteredit.setVisible(True)
 			self.deledit.setValue(self.cnnt.delay)
@@ -160,10 +162,16 @@ class cnntedt(QtGui.QDialog):
 			self.deledit.setVisible(True)
 			if self.cnnt.delay < 0.0 : self.cnnt.delay = 10.0
 			self.deledit.setValue(self.cnnt.delay)
-			self.jitterck.setVisible(True)
-			self.jitterck.setCheckState(QtCore.Qt.Unchecked)
-			self.jitteredit.setVisible(False)
-			self.cnnt.jitter	= -1.0
+			if self.cnnt.jitter < 0:
+				self.jitterck.setVisible(True)
+				self.jitterck.setCheckState(QtCore.Qt.Unchecked)
+				self.jitteredit.setVisible(False)
+			else:
+				self.jitterck.setVisible(True)
+				self.jitterck.setCheckState(QtCore.Qt.Checked)
+				self.jitteredit.setVisible(True)
+				self.jitteredit.setValue(self.cnnt.jitter)
+			
 	def setJitter(self, cond):
 		if self.cnnt.delay < 0.0: return
 		if cond != 2:
@@ -192,7 +200,8 @@ class cnntedt(QtGui.QDialog):
 		else:
 			self.cnnt.delay = self.deledit.value()
 			self.cnnt.jitter = self.jitteredit.value()
-		print "Delay value: ", self.cnnt.delay
+#		print "< Delay value: ", self.cnnt.delay
+#		print "< Jitter value: ", self.cnnt.jitter
 		self.accept()
 	def cancel(self):
 		self.reject()
