@@ -270,6 +270,7 @@ class clmodel:
 					self.runer_flg = 0
 					self.error = "Mininal Time To Spike less then ZERO!\nABBORT\n\n"
 					break
+
 				
 
 			self.print_preupdate(neuronlst,connectlst)
