@@ -423,14 +423,14 @@ class prceditor(QtGui.QDialog):
 			if not ok:
 				QtGui.QMessageBox.critical(self,"Critical ERROR!","The cell %dx%d isn't an number!"%(idx,idd),QtGui.QMessageBox.Ok,0)
 				return False
-			self.prc.data[idx][0] = "%9.7f"%data
+			self.prc.data[idx][0] = "%12.9f"%data
 			for iter in xrange( len(self.prc.data[idx][1]) ):
 				idd += 1
 				data,ok = self.tbl.item(idx,idd).data(0).toDouble()
 				if not ok:
 					QtGui.QMessageBox.critical(self,"Critical ERROR!","The cell %dx%d isn't an number!"%(idx,idd),QtGui.QMessageBox.Ok,0)
 					return False
-				self.prc.data[idx][1][iter] = "%9.7f"%data
+				self.prc.data[idx][1][iter] = "%g"%data
 			if not self.prc.f2: continue
 			for iter in xrange( len(self.prc.data[idx][2]) ):
 				idd += 1
@@ -438,7 +438,7 @@ class prceditor(QtGui.QDialog):
 				if not ok:
 					QtGui.QMessageBox.critical(self,"Critical ERROR!","The cell %dx%d isn't an number!"%(idx,idd),QtGui.QMessageBox.Ok,0)
 					return False
-				self.prc.data[idx][2][iter] = "%9.7f"%data
+				self.prc.data[idx][2][iter] = "%g"%data
 		self.prc.name=self.nameedit.text().toUtf8().data()
 		self.readprc()
 		return True
