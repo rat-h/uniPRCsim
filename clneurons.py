@@ -102,8 +102,7 @@ class clneurons:
 		for cont in self.connections.items():
 			gsyn_sum = 0
 			for con in cont[1]:
-				gsyn_sum += reduce(lambda x,y:x+y, con.op)
-				gsyn_sum *= con.gsyn
+				gsyn_sum += con.gsyn * reduce(lambda x,y:x+y, con.op)
 			for nrn in xrange(self.number):
 				#Insert here saturation code!
 				#----------------------------
