@@ -264,11 +264,11 @@ class clmodel:
 			if self.timetospike < 0.0 :
 				#print reduce(lambda y,x:y+x.timetospike,neuronlst + connectlst ,[])
 				if self.mode == "STD":
-					sys.stderr.write("Mininal Time To Spike less then ZERO!\nABBORT\n\n")
+					sys.stderr.write("At t=%g Mininal Time To Spike less then ZERO!\nABBORT\n\n"%self.elapsed_time)
 					sys.exit(1)
 				else:
 					self.runer_flg = 0
-					self.error = "Mininal Time To Spike less then ZERO!\nABBORT\n\n"
+					self.error = "\nMininal Time To Spike less then ZERO!\nABBORT\nt = %g\n\n"%self.elapsed_time
 					break
 
 				
