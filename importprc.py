@@ -63,7 +63,10 @@ class importprc:
 		data = csv.reader(fd,dialect=format)
 		for row in data:
 			if len(row) == 0: continue
-			nrow = row[0].split()
+			elif len(row) > 1:
+				nrow = row
+			else:
+				nrow = row[0].split()
 #			print row, " -> ", nrow
 			if not self.data.get(nrow[0], 0):
 				self.data[ nrow[0] ]=[ [],[] ]
