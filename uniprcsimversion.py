@@ -1,8 +1,8 @@
 
 MAJOR=0
 MINOR=0
-PATCH=15
-DATE="20110531"
+PATCH=16
+DATE="20110610"
 def getversion():
 	return "%d.%02d.%04d"%(MAJOR,MINOR,PATCH)
 def getlongversion():
@@ -13,7 +13,7 @@ def getlongversion():
 if __name__ == "__main__":
 	import time, re, os, sys
 	import uniprcsimversion
-	if 	os.system("zip -9 uniPRCsim-update%s.zip *.pyc *.py"%getversion()):
+	if 	os.system("zip -9 uniPRCsim-update%s.z *.pyc *.py"%getversion()):
 		sys.stderr.write("Cannot create zip file\n\n")
 		sys.exit(1)
 	if os.system("git commit -a"):
