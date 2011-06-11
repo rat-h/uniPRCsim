@@ -90,10 +90,8 @@ class clconnection:
 				
 				if len(self.fifo[idx]) == 0:
 					self.timetospike[idx] = 1e19
+				elif self.jitter > 0.0:
+					self.timetospike[idx] = rnd.normalvariate(self.delay, self.jitter) * (1 - self.fifo[idx][0])
 				else:
 					self.timetospike[idx] = self.delay * (1 - self.fifo[idx][0])
-				if self.jitter <= 0.0:
-					continue
-				self.timetospike[idx] = rnd.normalvariate(self.timetospike[idx], self.jitter)
-			
 

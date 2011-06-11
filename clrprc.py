@@ -41,10 +41,9 @@ class clrprc:
 		return ["<rprc name=\"%s\" prc=\"%s\" sd=\"%g\" sd2=\"%g\" />"%(
 			self.name, self.prc.name, self.sd, self.sd2)]
 	def getvl(self, gsyn, ph):
-#		sys.stderr.write("getvl:")
+		if gsyn <= 0.0: return(0.0, 0.0)
 		mu = self.prc.getvl(gsyn, ph)
 		return (
 			rnd.normalvariate(mu[0],self.sd),
 			rnd.normalvariate(mu[1],self.sd2)
 			)
-			
