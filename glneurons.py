@@ -132,8 +132,7 @@ class nrnedt(QtGui.QDialog):
 		self.connect(self.nameedit, QtCore.SIGNAL('editingFinished()'), self.rename)
 		self.readnrn()
 	def rename(self):
-		if self.nrn == None:
-			self.nrn = odprc()
+		if self.nrn == None: self.nrn = odneurons()
 		self.nrn.name = self.nameedit.text()
 		self.setWindowTitle(self.nrn.name + ' :: Neurons Editor')
 

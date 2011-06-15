@@ -1,7 +1,7 @@
 import sys, csv
 import random as rnd
 from datetime import time
-import clprc, clrprc, clpopulation, clneurons, clconnection
+import clprc, clrprc, clpopulation, clneurons, clconnection, clnoisyneurons
 
 class clmodel:
 	class file:
@@ -184,6 +184,11 @@ class clmodel:
 			self.objlst["neurons"][self.workobj.name]= self.workobj
 		elif self.workobj == None and object == "neurons":
 			self.workobj = clneurons.clneurons(attr=attr)
+			if not self.objlst.get("neurons", 0):
+				self.objlst["neurons"]={}
+			self.objlst["neurons"][self.workobj.name]= self.workobj			
+		elif self.workobj == None and object == "noisyneurons":
+			self.workobj = clnoisyneurons.clnoisyneurons(attr=attr)
 			if not self.objlst.get("neurons", 0):
 				self.objlst["neurons"]={}
 			self.objlst["neurons"][self.workobj.name]= self.workobj			

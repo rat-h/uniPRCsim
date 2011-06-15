@@ -229,7 +229,7 @@ class glconnection:
 		self.cnntlst = []
 	def insert(self):
 		if not self.parent.isactive : return
-		frmto=self.parent.getnames(lst=["population","neurons"])
+		frmto=self.parent.getnames(lst=["population","neurons","noisyneurons"])
 		if len(frmto) < 1:
 			QtGui.QMessageBox.critical(self.mainwnd,"Critical ERROR!"," You should have at least one neurons set or population! ",QtGui.QMessageBox.Ok,0)
 			return
