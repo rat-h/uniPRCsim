@@ -253,7 +253,7 @@ class glmodel:
 		if len(self.glprc.prclst) == 0 and len(self.glrprc.prclst) == 0:
 			QtGui.QMessageBox.critical(self.parent,"Critical ERROR!"," You should have at least one PRC function! ",QtGui.QMessageBox.Ok,0)
 			return
-		if len(self.glpopulation.poplst) == 0 and len(self.glneurons.nrnlst) == 0:
+		if len(self.glpopulation.poplst) == 0 and len(self.glneurons.nrnlst) == 0 and len(self.glnoisyneurons.nrnlst) == 0:
 			QtGui.QMessageBox.critical(self.parent,"Critical ERROR!"," You should have at least one Population or neuron set! ",QtGui.QMessageBox.Ok,0)
 			return
 		if len(self.glconnection.cnntlst) == 0:

@@ -213,7 +213,7 @@ class outputglg(QtGui.QDialog):
 		self.formatcombo.setCurrentIndex(id)
 
 		self.watchcombo = QtGui.QComboBox(self)
-		self.watchcombo.addItems( ["spikes","period","last period","phases","time to spike","second correction"])
+		self.watchcombo.addItems( ["spikes","periods","last period","phases","time to spike","second correction"])
 		id = self.watchcombo.findText(self.odoutput.watch)
 		if id < 0:id = 0
 		self.watchcombo.setCurrentIndex(id)
