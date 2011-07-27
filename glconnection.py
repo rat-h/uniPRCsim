@@ -277,11 +277,11 @@ class glconnection:
 		for cnnt in self.cnntlst:
 			if cnnt.id == None: continue
 			if cnnt.delay < 0.0:
-				result.append("<connection name=\"%s\" from=\"%s\" to=\"%s\" gsyn=\"%3.1g\" prc=\"%s\" />"%(cnnt.name, cnnt.frm, cnnt.to, cnnt.gsyn, cnnt.prc) )
+				result.append("<connection name=\"%s\" from=\"%s\" to=\"%s\" gsyn=\"%g\" prc=\"%s\" />"%(cnnt.name, cnnt.frm, cnnt.to, cnnt.gsyn, cnnt.prc) )
 			elif cnnt.jitter < 0.0:
-				result.append("<connection name=\"%s\" from=\"%s\" to=\"%s\" gsyn=\"%3.1g\" prc=\"%s\" delay=\"%g\" />"%(cnnt.name, cnnt.frm, cnnt.to, cnnt.gsyn, cnnt.prc, cnnt.delay) )
+				result.append("<connection name=\"%s\" from=\"%s\" to=\"%s\" gsyn=\"%g\" prc=\"%s\" delay=\"%g\" />"%(cnnt.name, cnnt.frm, cnnt.to, cnnt.gsyn, cnnt.prc, cnnt.delay) )
 			else:
-				result.append("<connection name=\"%s\" from=\"%s\" to=\"%s\" gsyn=\"%3.1g\" prc=\"%s\" delay=\"%g\" jitter=\"%g\" />"%(cnnt.name, cnnt.frm, cnnt.to, cnnt.gsyn, cnnt.prc, cnnt.delay, cnnt.jitter) )
+				result.append("<connection name=\"%s\" from=\"%s\" to=\"%s\" gsyn=\"%g\" prc=\"%s\" delay=\"%g\" jitter=\"%g\" />"%(cnnt.name, cnnt.frm, cnnt.to, cnnt.gsyn, cnnt.prc, cnnt.delay, cnnt.jitter) )
 		return result
 	def startpoint(self, name, attr={}):
 		if name != self.object:
