@@ -406,9 +406,6 @@ class gloutput:
 			edt.readfile(filename)
 			edt.show()
 
-
-
-		
 if __name__ == '__main__':
 	app = QtGui.QApplication(sys.argv)
 	ex = glraster()

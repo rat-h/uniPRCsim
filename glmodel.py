@@ -2,6 +2,7 @@ from PyQt4 import QtGui, QtCore
 from xml.sax import handler, make_parser
 import glprc, glrprc, glpopulation, glneurons, glconnection, glnoisyneurons
 import gloutput, glrun, icons
+import glphasetable
 import os
 
 class glmodel:
@@ -63,7 +64,12 @@ class glmodel:
 		showrst.setShortcut('Ctrl+S')
 		showrst.setStatusTip('Show grathical outputs')
 		mainwnd.connect(showrst, QtCore.SIGNAL('triggered()'), self.show)
-		
+
+		showphs = QtGui.QAction(QtGui.QIcon(':/steadyphases.png'), 'Show phases', mainwnd)
+		#showrst.setShortcut('Ctrl+S')
+		showphs.setStatusTip('Show steady state phase relations')
+		mainwnd.connect(showphs, QtCore.SIGNAL('triggered()'), self.phases)
+
 		#insert output
 		#insoutmdl = QtGui.QAction(QtGui.QIcon(':/insert.png'), 'Insert new output from model', mainwnd)
 		#insoutmdl.setShortcut('Ctrl+Shift+O')
@@ -107,9 +113,11 @@ class glmodel:
 		toolbar.addSeparator()
 		run = menubar.addMenu('&Run')
 		run.addAction(runmdl)
-		run.addAction(showrst)
 		toolbar.addAction(runmdl)
-		toolbar.addAction(showrst)
+		
+		tools = menubar.addMenu('&Tools')
+		tools.addAction(showrst)
+		tools.addAction(showphs)
 		#Data
 		self.isactive	= 0
 		self.name		= "***"
@@ -267,7 +275,14 @@ class glmodel:
 		self.gloutput.show()
 	def show(self):
 		self.gloutput.show()
-		
+	def phases(self):
+		for out in self.gloutput.outlst:
+			if out.watch != "spikes": continue
+			if out.format != "excel": continue
+			if out.id == None: continue
+			filename = self.gloutput.getfilename(out)
+			phasetbl = glphasetable.glphasetable(filename=filename,parent=self.parent)
+			phasetbl.exec_()
 	def newoutput(self):
 		print "new output"
 	def removeoutput(self):
