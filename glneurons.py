@@ -310,7 +310,7 @@ class glneurons:
 		self.ischanged	= True
 
 	def click(self):
-		self.insert()	
+		self.insert()
 
 	def save(self, pid = -1):
 		result=[]
@@ -388,7 +388,11 @@ class glneurons:
 				newnrn.setText(2,self.tmpnrn.name)
 				newnrn.setData(1,QtCore.Qt.UserRole,self.object)
 				newnrn.setData(2,QtCore.Qt.UserRole,len(self.nrnlst))
-				
+				#Truncate ph0 and ph1 sequences
+				self.tmpnrn.ph0 = self.tmpnrn.ph0[:self.tmpnrn.number]
+				self.tmpnrn.ph1 = self.tmpnrn.ph1[:selvf.tmpnrn.number]
+				print self.tmpnrn.name,"pho:",self.tmpnrn.ph1
+				print self.tmpnrn.name,"ph1:",self.tmpnrn.ph0
 				self.nrnlst.append(self.tmpnrn)
 				self.tmpnrn = None
 				return

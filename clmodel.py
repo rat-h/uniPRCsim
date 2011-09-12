@@ -337,12 +337,13 @@ class clmodel:
 				for  item in neuronlst:
 					for ph in item.neurons:
 						wrd.append(ph[0])
-				for  item in connectlst:
-					for ph in item.fifo:
-						if len(ph) > 0:
-							wrd.append(ph[0])
-						else:
-							wrd.append(1e19)
+				if fl.connections == "on":
+					for  item in connectlst:
+						for ph in item.fifo:
+							if len(ph) > 0:
+								wrd.append(ph[0])
+							else:
+								wrd.append(1e19)
 			elif fl.watch == "second correction":
 				for  item in neuronlst:
 					for ph in item.neurons:
