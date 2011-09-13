@@ -105,7 +105,7 @@ class clprc:
 				bd = [self.header[0], self.header[1]]
 				idx = 0
 			else :
-				bd = [self.header[-1],self.header[-2]]
+				bd = [self.header[-2],self.header[-1]]
 				idx = -2
 		if ph == 0 :	phsh = 0
 		elif ph == 1 :	phsh = 1
@@ -119,7 +119,7 @@ class clprc:
 			ind[0][2][idx]  +(ind[1][2][idx]   - ind[0][2][idx])  *phsh,
 			ind[0][2][idx+1]+(ind[1][2][idx+1] - ind[0][2][idx+1])*phsh 
 		)
-		#print "DB: getvl ", bd,vl
+		#print "DB: getvl: bd: ", bd,"gsyn:",gsyn,"vl:",vl1,
 		return (
 				vl1[0]+(vl1[1]-vl1[0])*(gsyn-bd[0])/(bd[1]-bd[0]),
 				vl2[0]+(vl2[1]-vl2[0])*(gsyn-bd[0])/(bd[1]-bd[0])

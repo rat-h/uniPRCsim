@@ -107,17 +107,18 @@ class clneurons:
 				#Insert here saturation code!
 				#----------------------------
 				correction = cont[1][0].prc.getvl( gsyn_sum, self.neurons[nrn][0])
-				#print self.name,": ",gsyn_sum, self.neurons[nrn][0], " ==>", correction
+				#print self.name,": gsum:",gsyn_sum, "phi:",self.neurons[nrn][0], " ==>", correction,
 				self.neurons[nrn][0] -= correction[0]	#f1 contribution (why - ?)
-				#print self.neurons[nrn][0], " ===> ", correction[0]
+				#print "phi:", self.neurons[nrn][0]
 				if self.f2 == "off": continue
 				elif self.f2 == "last":
 					self.neurons[nrn][1] = correction[1]	#replace f2 contribution
 				else :
 					self.neurons[nrn][1] += correction[1]	#replace f2 contribution
 		for inx in xrange(self.number):
+			#print self.name,": phi:",self.neurons[inx][0], "tos:",self.timetospike[inx],
 			self.timetospike[inx] = self.period * (1.0 - self.neurons[inx][0])
-		
+			#print "===>",self.timetospike[inx]
 	def update(self,model):
 		for inx in xrange(self.number):
 			if self.timetospike[inx] <= model.timetospike:
