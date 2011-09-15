@@ -391,8 +391,8 @@ class glneurons:
 				#Truncate ph0 and ph1 sequences
 				self.tmpnrn.ph0 = self.tmpnrn.ph0[:self.tmpnrn.number]
 				self.tmpnrn.ph1 = self.tmpnrn.ph1[:self.tmpnrn.number]
-				print self.tmpnrn.name,"pho:",self.tmpnrn.ph1
-				print self.tmpnrn.name,"ph1:",self.tmpnrn.ph0
+				#print self.tmpnrn.name,"ph0:",self.tmpnrn.ph1
+				#print self.tmpnrn.name,"ph1:",self.tmpnrn.ph0
 				self.nrnlst.append(self.tmpnrn)
 				self.tmpnrn = None
 				return

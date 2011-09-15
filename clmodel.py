@@ -110,7 +110,7 @@ class clmodel:
 				self.__fd.write(line+"\n")
 			else:
 				line=[]
-				if attr.get("time",0):
+				if attr.get("time",-1) >= 0:
 					line.append(attr["time"])
 					del attr["time"]
 				for atr in attr.items():
@@ -317,7 +317,6 @@ class clmodel:
 			fl.writeheader(wrd,attr={"time":1.0,"mintos":0})
 		
 	def print_preupdate(self,neuronlst,connectlst):
-			
 		for fl in self.objlst["outputs"]:
 		#print fl.name," ",fl.watch," ",fl.format," "
 			wrd=[]
