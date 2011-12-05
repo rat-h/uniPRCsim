@@ -110,6 +110,7 @@ class clprc:
 		if ph == 0 :	phsh = 0
 		elif ph == 1 :	phsh = 1
 		else:
+			#print "\nDB: getvl ","phi=",ph,"ind[1,0][0]=",ind[1][0], ind[0][0]
 			phsh=(ph-ind[0][0])/(ind[1][0] - ind[0][0])
 		vl1 = (
 			ind[0][1][idx]  +(ind[1][1][idx]   - ind[0][1][idx])  *phsh,
