@@ -47,11 +47,14 @@ class clneurons:
 					self.neurons[i][0] = rnd.normalvariate(
 						float(attr["ph0_all"]), float(attr["ph0_sd"])
 						)
+					if self.neurons[i][0] > 1.0: self.neurons[i][0] -= abs( math.floor(self.neurons[i][0]) ) + 1.0
 			if attr.get("ph1_all") and attr.get("ph1_sd") :
 				for i in xrange(self.number):
 					self.neurons[i][1] = rnd.normalvariate(
 						float(attr["ph1_all"]), float(attr["ph1_sd"])
 						)
+					if self.neurons[i][1] > 1.0: self.neurons[i][1] -= abs( math.floor(self.neurons[i][1]) ) + 2.0
+				
 			if attr.get("ph0"):
 				setstrl=string.split(attr["ph0"],",")
 				if len(setstrl) < self.number:
