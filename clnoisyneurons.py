@@ -160,7 +160,9 @@ class clnoisyneurons:
 					while self.periods[nrn] <= 0.0 :
 						self.periods[nrn] += (self.period_mu - self.periods[nrn]) * (1.0 - math.exp( - self.neurons[nrn][2]/self.period_tau) ) + rnd.gauss(0,self.period_sd) * math.sqrt(self.neurons[nrn][2])
 				elif self.process == 1 or self.process == 3:
-					self.periods[nrn] += (self.period_mu - self.periods[nrn]) * self.neurons[nrn][2]/self.period_tau + rnd.gauss(0,self.period_sd) * math.sqrt(self.periods[nrn]*self.neurons[nrn][2])
+					self.periods[nrn] += (self.period_mu - self.periods[nrn]) * (1.0 - math.exp( - self.neurons[nrn][2]/self.period_tau) ) + rnd.gauss(0,self.period_sd) * math.sqrt(self.periods[nrn]*self.neurons[nrn][2])
+					while self.periods[nrn] <= 0.0 :
+						self.periods[nrn] += (self.period_mu - self.periods[nrn]) * (1.0 - math.exp( - self.neurons[nrn][2]/self.period_tau) ) + rnd.gauss(0,self.period_sd) * math.sqrt(self.periods[nrn]*self.neurons[nrn][2])
 			else:
 				self.neurons[nrn][0] += model.timetospike/self.periods[nrn]
 				self.op[nrn] = 0

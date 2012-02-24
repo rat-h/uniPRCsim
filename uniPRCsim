@@ -15,9 +15,9 @@ GUI = True
 for arg in sys.argv[1:]:
 	if arg == "--nogui": GUI=False
 	if arg == "--help" or arg == "-h" or arg == "/help" or arg == "/h" or arg == "?":
-		sys.stderr.write("%s [--nogui] [file.pxm]\n\n"%sys.arg[0])
-		sys.stderr.write("%s --version\n"%sys.arg[0])
-		sys.stderr.write("%s --update updatefile\n\n"%sys.arg[0])
+		sys.stderr.write("%s [--nogui] [file.pxm]\n\n"%sys.argv[0])
+		sys.stderr.write("%s --version\n"%sys.argv[0])
+		sys.stderr.write("%s --update updatefile\n\n"%sys.argv[0])
 		sys.exit(0)
 	if arg == "--version" or arg =="-v" or arg == "/version" or arg == "/v" or arg == "/V":
 		import uniprcsimversion
