@@ -206,6 +206,19 @@ class rastrwd(QtGui.QWidget):
 		fd.write('<text x="%g" y="%g" font-family="Verdana" font-size="16" fill="black" >%0.3f</text>\n'%(x0-self.margins[1],h-self.margins[3],float(self.data.data[dind][0]) ))
 		fd.write("</g>\n</svg>")
 		fd.close()
+	def setx(self):
+		print "in"
+		ret = QtGui.QInputDialog.getDouble(self, "Setup Time for Left border","Left position",self.data.data[self.d_left_idx][0], self.data.data[0][0], self.data.data[-1][0])
+		if not ret[1] : return
+		scan,maxscan = 0,len(self.data.data)
+		while self.data.data[scan][0]<ret[0] and scan < maxscan: scan += 1
+		self.d_left_idx = scan
+		ret = QtGui.QInputDialog.getDouble(self, "Setup Time for Left border","Left position",self.data.data[self.d_left_idx+self.d_len][0], self.data.data[0][0], self.data.data[-1][0])
+		if not ret[1] : return
+		while self.data.data[scan][0]<ret[0] and scan < maxscan: scan += 1
+		self.d_len = scan - self.d_left_idx
+		self.parent.scroller.setSliderPosition(self.d_left_idx)
+		self.rescale()
 
 
 class glraster(QtGui.QDialog):
@@ -220,12 +233,14 @@ class glraster(QtGui.QDialog):
 		zoonin	= QtGui.QPushButton(QtGui.QIcon(':/zoomin.png'),"Zoom &In",self)
 		zoonout	= QtGui.QPushButton(QtGui.QIcon(':/zoomout.png'),"Zoom &Out",self)
 		getsvg = QtGui.QPushButton(QtGui.QIcon(':/get-svg.png'),"&Export in SVG file",self)
+		setx = QtGui.QPushButton(QtGui.QIcon(':/setup-time.png'),"",self)
 		close	= QtGui.QPushButton(QtGui.QIcon(':/exit.png'),"&Close",self)
 		hbox = QtGui.QHBoxLayout()
 		hbox.addWidget(zoonin)
 		hbox.addWidget(zoonout)
-		#hbox.addSeparator()
 		hbox.addWidget(getsvg)
+		hbox.addWidget(setx)
+		#hbox.addSeparator()
 		hbox.addStretch(1)
 		hbox.addWidget(close)
 		vbox = QtGui.QVBoxLayout()
@@ -237,6 +252,7 @@ class glraster(QtGui.QDialog):
 		self.connect(zoonin,QtCore.SIGNAL('clicked()'), self.mainwd.zoomin)
 		self.connect(zoonout,QtCore.SIGNAL('clicked()'), self.mainwd.zoomout)
 		self.connect(getsvg,QtCore.SIGNAL('clicked()'), self.mainwd.getsvg)
+		self.connect(setx,QtCore.SIGNAL('clicked()'), self.mainwd.setx)
 		self.connect(close,QtCore.SIGNAL('clicked()'), self.close)
 	
 	def readfile(self,filename):
@@ -464,7 +480,7 @@ class gloutput:
 if __name__ == '__main__':
 	app = QtGui.QApplication(sys.argv)
 	ex = glraster()
-	ex.mainwd.readfile("test/working_t.csv")
+	ex.mainwd.readfile(sys.argv[-1])
 	ex.show()
 	#ex=prcviewdlg(prc)
 	#ex.exec_()
