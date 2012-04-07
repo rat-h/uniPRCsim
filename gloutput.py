@@ -156,55 +156,50 @@ class rastrwd(QtGui.QWidget):
 			self.parent.scroller.setValue(self.d_left_idx)		
 		self.rescale()
 	def getsvg(self):
+		if self.data == None:return
 		filename = QtGui.QFileDialog.getSaveFileName(self.parent, 'Export to file', '', "Scalable Vector Graphics(*.svg)")
 		if filename.length() < 1: return
 		fd = open(filename.toUtf8().data(),"w")
 		fd.write('<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?>\n')
 		fd.write('<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" >\n')
 		fd.write('<g>\n')
-		if self.data == None:return
-		qp  = QtGui.QPainter()
-		pen = QtGui.QPen(QtCore.Qt.black, self.linewidth, QtCore.Qt.SolidLine)
-		h,w = self.size().height(), self.size().width()
-		qp.begin(self)
-		qp.setBrush(self.backgroundcolor)
-		qp.drawRect(0, 0, w, h)
-		for cnt in xrange (self.d_len):
-			x0 = self.margins[0] + (self.data.data[cnt+self.d_left_idx][0] - self.t_left)/self.hscale
-			chv = -1
-			for ch in xrange(self.channels):
-				if not self.view[ch]: continue
-				chv += 1
-				if self.data.data[cnt+self.d_left_idx][ch+2] :
-					y0 = h - float(chv)*self.vscale-self.margins[2]
-					y1 = h - float(chv+1)*self.vscale-self.margins[2]
-					if  (y0 - y1) > 10:
-						y0 -= 3
-						y1 += 3
-					elif (y0 - y1) > 4:
-						y0 -= 1
-						y1 += 1
-					fd.write("<line style=\"stroke:black;stroke-width:2\" x1=\"%g\" y1=\"%g\" x2=\"%g\" y2=\"%g\"/>\n"%(x0,y0,x0,y1) )
-
+		nchannels = reduce (lambda x,y: x+y, self.view)
+		w,h = 1200.0, 1024
+		margins = self.margins
+		hscale = (self.data.data[self.d_left_idx+ self.d_len][0] - self.data.data[self.d_left_idx][0])/(w - margins[0] - margins[1])
+		t_left = self.data.data[self.d_left_idx][0]
+		vscale = (h -margins[2] - margins[3])/(nchannels+1)
 		chv = -1
 		for ch in xrange(self.channels):
 			if not self.view[ch]: continue
 			chv += 1
-			y0 = h - float(chv)*self.vscale-self.margins[2]
-			y1 = h - float(chv+1)*self.vscale-self.margins[2]
-			fd.write('<text x="%g" y="%g" font-family="Verdana" font-size="16" fill="black" >%s</text>\n'%(0,y0,self.data.header[ch+2] ))
-		x0 = self.margins[0] + (self.data.data[self.d_left_idx][0] - self.t_left)/self.hscale
-		x1 = self.margins[0] + (self.data.data[self.d_len + self.d_left_idx][0] - self.t_left)/self.hscale
-		fd.write("<line style=\"stroke:black;stroke-width:3;stroke-linecap:round\" x1=\"%g\" y1=\"%g\" x2=\"%g\" y2=\"%g\"/>\n"%(x0,h - self.margins[2],x1, h - self.margins[2]) )
-		fd.write("<line style=\"stroke:black;stroke-width:3;stroke-linecap:round\" x1=\"%g\" y1=\"%g\" x2=\"%g\" y2=\"%g\"/>\n"%(x0,h - self.margins[2],x0,h - self.margins[2]+self.margins[3]/2) )
-		fd.write('<text x="%g" y="%g" font-family="Verdana" font-size="16" fill="black" >%0.3f</text>\n'%(x0-self.margins[1],h-self.margins[3],float(self.data.data[self.d_left_idx][0]) ))
-		fd.write("<line style=\"stroke:black;stroke-width:3;stroke-linecap:round\" x1=\"%g\" y1=\"%g\" x2=\"%g\" y2=\"%g\"/>\n"%(x1,h - self.margins[2],x1,h - self.margins[2]+self.margins[3]/2) )
-		fd.write('<text x="%g" y="%g" font-family="Verdana" font-size="16" fill="black" >%0.3f</text>\n'%(x1-self.margins[1],h-self.margins[3],float(self.data.data[self.d_len + self.d_left_idx][0]) ))
+			y0 = h - float(chv)  *vscale-margins[2]
+			y1 = h - float(chv+1)*vscale-margins[2]
+			if  (y0 - y1) > 10:
+				y0 -= 3
+				y1 += 3
+			elif (y0 - y1) > 4:
+				y0 -= 1
+				y1 += 1
+			fd.write('<g>\n<text x="%g" y="%g" font-family="Verdana" font-size="16" fill="black" >%s</text>\n'%(0,(y0+y1)/2,self.data.header[ch+2] ))
+			for cnt in xrange (self.d_len):
+				if self.data.data[cnt+self.d_left_idx][ch+2] :
+					x0 = margins[0] + (self.data.data[cnt+self.d_left_idx][0] - t_left)/hscale
+					fd.write("<line style=\"stroke:black;stroke-width:2\" x1=\"%g\" y1=\"%g\" x2=\"%g\" y2=\"%g\"/>\n"%(x0,y0,x0,y1) )
+			fd.write("</g>\n")
+		fd.write("<g>\n")
+		x0 = margins[0] + (self.data.data[self.d_left_idx][0] - self.t_left)/hscale
+		x1 = margins[0] + (self.data.data[self.d_len + self.d_left_idx][0] - t_left)/hscale
+		fd.write("<line style=\"stroke:black;stroke-width:3;stroke-linecap:round\" x1=\"%g\" y1=\"%g\" x2=\"%g\" y2=\"%g\"/>\n"%(x0,h - margins[2],x1, h - margins[2]) )
+		fd.write("<line style=\"stroke:black;stroke-width:3;stroke-linecap:round\" x1=\"%g\" y1=\"%g\" x2=\"%g\" y2=\"%g\"/>\n"%(x0,h - margins[2],x0,h - margins[2]+ margins[3]/2) )
+		fd.write('<text x="%g" y="%g" font-family="Verdana" font-size="16" fill="black" >%0.3f</text>\n'%(x0-margins[1],h-margins[3]/2,float(self.data.data[self.d_left_idx][0]) ))
+		fd.write("<line style=\"stroke:black;stroke-width:3;stroke-linecap:round\" x1=\"%g\" y1=\"%g\" x2=\"%g\" y2=\"%g\"/>\n"%(x1,h - margins[2],x1,h - margins[2]+margins[3]/2) )
+		fd.write('<text x="%g" y="%g" font-family="Verdana" font-size="16" fill="black" >%0.3f</text>\n'%(x1-margins[1],h-margins[3]/2,float(self.data.data[self.d_len + self.d_left_idx][0]) ))
 		dind = (self.d_len/2 +  self.d_left_idx)
-		x0 = self.margins[0] + (self.data.data[dind][0] - self.t_left)/self.hscale
-		fd.write("<line style=\"stroke:black;stroke-width:2;stroke-linecap:round\" x1=\"%g\" y1=\"%g\" x2=\"%g\" y2=\"%g\"/>\n"%(x0,h - self.margins[2],x0,h - self.margins[2]+self.margins[3]/2) )
-		fd.write('<text x="%g" y="%g" font-family="Verdana" font-size="16" fill="black" >%0.3f</text>\n'%(x0-self.margins[1],h-self.margins[3],float(self.data.data[dind][0]) ))
-		fd.write("</g>\n</svg>")
+		x0 = margins[0] + (self.data.data[dind][0] - t_left)/hscale
+		fd.write("<line style=\"stroke:black;stroke-width:2;stroke-linecap:round\" x1=\"%g\" y1=\"%g\" x2=\"%g\" y2=\"%g\"/>\n"%(x0,h - margins[2],x0,h - margins[2]+margins[3]/2) )
+		fd.write('<text x="%g" y="%g" font-family="Verdana" font-size="16" fill="black" >%0.3f</text>\n'%(x0-margins[1],h-margins[3]/2,float(self.data.data[dind][0]) ))
+		fd.write("</g>\n</g>\n</svg>")
 		fd.close()
 	def setx(self):
 		print "in"
@@ -232,7 +227,7 @@ class glraster(QtGui.QDialog):
 		self.scroller = QtGui.QScrollBar(QtCore.Qt.Horizontal,self)
 		zoonin	= QtGui.QPushButton(QtGui.QIcon(':/zoomin.png'),"Zoom &In",self)
 		zoonout	= QtGui.QPushButton(QtGui.QIcon(':/zoomout.png'),"Zoom &Out",self)
-		getsvg = QtGui.QPushButton(QtGui.QIcon(':/get-svg.png'),"&Export in SVG file",self)
+		getsvg = QtGui.QPushButton(QtGui.QIcon(':/get-svg.png'),"",self)
 		setx = QtGui.QPushButton(QtGui.QIcon(':/setup-time.png'),"",self)
 		close	= QtGui.QPushButton(QtGui.QIcon(':/exit.png'),"&Close",self)
 		hbox = QtGui.QHBoxLayout()
