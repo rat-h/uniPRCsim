@@ -258,10 +258,12 @@ class clmodel:
 		self.runer_flg = 1
 		while ( self.cnt < self.maxspikes or self.maxspikes < 0 ) and self.runer_flg:
 			if self.hideout: self.cnt += 1
-			for idx in xrange( len(neuronlst) ):
-				neuronlst[idx].calculate(self)
-			for idx in xrange( len(connectlst) ):
-				connectlst[idx].calculate(self)
+			for idx in neuronlst :idx.calculate(self)
+			for idx in connectlst:idx.calculate(self)
+#			for idx in xrange( len(neuronlst) ):
+#				neuronlst[idx].calculate(self)
+#			for idx in xrange( len(connectlst) ):
+#				connectlst[idx].calculate(self)
 			self.timetospike = min(reduce(lambda y,x:y+x.timetospike,neuronlst + connectlst ,[]))
 #			self.timetospike = 1e19
 #			for tos in reduce(lambda y,x:y+x.timetospike,neuronlst + connectlst ,[]):
