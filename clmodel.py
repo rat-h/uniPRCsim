@@ -262,10 +262,11 @@ class clmodel:
 				neuronlst[idx].calculate(self)
 			for idx in xrange( len(connectlst) ):
 				connectlst[idx].calculate(self)
-			self.timetospike = 1e19
-			for tos in reduce(lambda y,x:y+x.timetospike,neuronlst + connectlst ,[]):
-				if tos < self.timetospike:
-					self.timetospike = tos
+			self.timetospike = min(reduce(lambda y,x:y+x.timetospike,neuronlst + connectlst ,[]))
+#			self.timetospike = 1e19
+#			for tos in reduce(lambda y,x:y+x.timetospike,neuronlst + connectlst ,[]):
+#				if tos < self.timetospike:
+#					self.timetospike = tos
 			if self.timetospike < 0.0 :
 				#print reduce(lambda y,x:y+x.timetospike,neuronlst + connectlst ,[])
 				if self.mode == "STD":

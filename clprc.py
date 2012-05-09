@@ -109,8 +109,11 @@ class clprc:
 				idx = -2
 		if ph == 0 :	phsh = 0
 		elif ph == 1 :	phsh = 1
+		elif ph > 1:
+			sys.stderr.write( "Phi is great as one!\n")
+			return None
 		else:
-			#print "\nDB: getvl ","phi=",ph,"ind[1,0][0]=",ind[1][0], ind[0][0]
+			#sys.stderr.write( "\nDB: getvl: phi=%f ind[1,0][0]=[%f,%f]\n"%(ph,ind[1][0], ind[0][0]) )
 			phsh=(ph-ind[0][0])/(ind[1][0] - ind[0][0])
 		vl1 = (
 			ind[0][1][idx]  +(ind[1][1][idx]   - ind[0][1][idx])  *phsh,
@@ -125,4 +128,3 @@ class clprc:
 				vl1[0]+(vl1[1]-vl1[0])*(gsyn-bd[0])/(bd[1]-bd[0]),
 				vl2[0]+(vl2[1]-vl2[0])*(gsyn-bd[0])/(bd[1]-bd[0])
 				)
-	

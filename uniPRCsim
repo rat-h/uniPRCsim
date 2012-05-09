@@ -7,7 +7,7 @@ BASEDIR="/home/rth/projects/uniPRCsim/"
 
 
 if not BASEDIR:
-	sys.stderr.write("INTALL ME\n\n")
+	sys.stderr.write("INSTALL ME\n\n")
 	sys.exit(1)
 
 sys.path.append(BASEDIR)
