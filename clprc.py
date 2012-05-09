@@ -82,7 +82,7 @@ class clprc:
 		print "PRN PRC OBJECT: ",self.name, self.header, self.data
 	def getvl(self, gsyn, ph):
 		if ph < 0 : ph = -math.ceil( ph ) + 1 - ph
-		if ph > 1 : ph = ph - 1
+		if ph > 1 : ph = ph - math.floor(ph)
 		ind = [self.data[0],self.data[0]]
 		for scan in self.data:
 			if scan[0] < ph : ind[0] = scan
@@ -109,9 +109,6 @@ class clprc:
 				idx = -2
 		if ph == 0 :	phsh = 0
 		elif ph == 1 :	phsh = 1
-		elif ph > 1:
-			sys.stderr.write( "Phi is great as one!\n")
-			return None
 		else:
 			#sys.stderr.write( "\nDB: getvl: phi=%f ind[1,0][0]=[%f,%f]\n"%(ph,ind[1][0], ind[0][0]) )
 			phsh=(ph-ind[0][0])/(ind[1][0] - ind[0][0])
