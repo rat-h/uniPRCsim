@@ -20,7 +20,7 @@ class clrprc:
 		if not attr.get("prc",0):
 			sys.stderr.write("Uncomplited tag <rprc>\nShould containes prc= atributes\nABBORT\n\n");
 			sys.exit(1)
-		self.prc = find(object="prc",name=attr["prc"])
+		if find != None: self.prc = find(object="prc",name=attr["prc"])
 		if attr.get("sd"):
 			self.sd = float(attr["sd"])
 		else:
@@ -43,7 +43,10 @@ class clrprc:
 	def getvl(self, gsyn, ph):
 		if gsyn <= 0.0: return(0.0, 0.0)
 		mu = self.prc.getvl(gsyn, ph)
+		reset1 = rnd.normalvariate(mu[0],self.sd)
+		while reset1 < (ph - 1.0):
+			reset1 = rnd.normalvariate(mu[0],self.sd)
 		return (
-			rnd.normalvariate(mu[0],self.sd),
+			reset1,
 			rnd.normalvariate(mu[1],self.sd2)
 			)

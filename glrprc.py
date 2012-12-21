@@ -14,10 +14,15 @@ class rprcviewer(glprc.prcviewer):
 	def __init__(self,prc,sd, parent=None):
 		super(rprcviewer, self).__init__(prc,parent)
 		self.data = []
+
 		for item in self.prc.data:
 			self.data.append([ item[0],[],[] ])
 			for cd in item[1]:
-				self.data[-1][1].append([ rnd.normalvariate(cd,sd) for x in xrange(5) ])
+				self.data[-1][1].append([])
+				while(len(self.data[-1][1][-1]) < 5):
+					yitem = rnd.normalvariate(cd,sd)
+					if yitem >= (self.data[-1][0] -1):
+						self.data[-1][1][-1].append(yitem)
 				idx = 0
 				for f1 in self.data[-1][1]:
 					for d in f1:
