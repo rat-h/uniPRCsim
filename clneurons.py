@@ -1,6 +1,6 @@
 import random as rnd
 import string
-import sys
+import sys,math
 
 class clneurons:
 	def __init__(self, object="neurons", attr={}):
