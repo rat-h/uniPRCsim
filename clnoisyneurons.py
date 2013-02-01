@@ -2,6 +2,15 @@ import random as rnd
 import string
 import sys
 import math
+#########################################################
+# process:
+# 0 - OUP
+# 1 - Feller
+# 2 - Period Additive noise
+# 3 - Phase Additive noise
+# 4 - OUP + resetting
+# 5 - Feller + resetting
+#########################################################
 
 class clnoisyneurons:
 	def __init__(self, object="noisyneurons", attr={}):
@@ -38,7 +47,10 @@ class clnoisyneurons:
 		#Array of neurons the numbers are
 		#	phase, second order correction and last period
 		self.neurons = [ [0, 0, 0] for x in xrange(self.number) ]
-		self.periods = [  rnd.gauss(self.period_mu,self.period_sd) for x in xrange(self.number) ]
+		if self.process != 3:
+			self.periods = [  rnd.gauss(self.period_mu,self.period_sd) for x in xrange(self.number) ]
+		else :
+			self.periods = [  self.period_mu for x in xrange(self.number) ]
 		self.timetospike = [ 0 for x in xrange(self.number) ]
 		#### Dic of named connections
 		self.connections = {}
@@ -123,11 +135,14 @@ class clnoisyneurons:
 				correction = cont[1][0].prc.getvl( gsyn_sum, self.neurons[nrn][0])
 				if self.process < 3:
 					self.neurons[nrn][0] -= correction[0]	#f1 contribution (why - ?)
+				elif self.process == 3:
+					
+					self.neurons[nrn][0] -= correction[0] + rnd.gauss(0,self.period_sd)
 				else:
 					sys.stderr.write("Name:%s; #:%d; Process:%d; P[n]=%g; ph[n]=%g; cor=%g; =="%(self.name,nrn,self.process,self.periods[nrn],self.neurons[nrn][0], correction[0]) )
-					if self.process == 3:
+					if self.process == 4:
 						self.periods[nrn] += (self.period_mu - self.periods[nrn]) * model.timetospike/self.period_tau + rnd.gauss(0,self.period_sd) * math.sqrt(model.timetospike) + correction[0] * self.periods[nrn]
-					else: # process == 4
+					else: # process == 5
 						self.periods[nrn] += (self.period_mu - self.periods[nrn]) * model.timetospike/self.period_tau + rnd.gauss(0,self.period_sd) * math.sqrt(self.periods[nrn]*model.timetospike) + correction[0] * self.periods[nrn]
 					pln = (self.period_tau*self.periods[nrn]-(self.period_mu-self.periods[nrn])*(model.elapsed_time - self.__lastspike[nrn]))/(self.period_tau+self.periods[nrn]+self.period_mu)
 					self.neurons[nrn][0] = (model.elapsed_time - self.__lastspike[nrn])/pln
@@ -144,10 +159,10 @@ class clnoisyneurons:
 			###self.timetospike[nrn] = self.periods[nrn] * (1.0 - self.neurons[nrn][0])
 	def update(self,model):
 		for nrn in xrange(self.number):
-			if self.process >= 2:
+			if self.process >= 4:
 				sys.stderr.write("mintos:%e; tos:%e; diff:%d\n"%(model.timetospike,self.timetospike[nrn],self.timetospike[nrn] <= model.timetospike))
 			if (self.timetospike[nrn] - model.timetospike) < 1e-7:
-				if self.process >= 3: sys.stderr.write("SPIKE\n")
+				if self.process >= 4: sys.stderr.write("SPIKE\n")
 				self.op[nrn] = 1
 				self.neurons[nrn][0] = 0.0
 				if self.f2 != "off":
@@ -155,21 +170,25 @@ class clnoisyneurons:
 					self.neurons[nrn][1] = 0.0
 				self.neurons[nrn][2] = model.elapsed_time - self.__lastspike[nrn]
 				self.__lastspike[nrn] = model.elapsed_time
-				if self.process == 0 or self.process == 3:
+				if self.process == 0 or self.process == 4:
 					# Deterministic part
 					self.periods[nrn] += (self.period_mu - self.periods[nrn]) * (1.0 - math.exp( - self.neurons[nrn][2]/self.period_tau) )
 					# Stochastic part
 					self.periods[nrn] += math.sqrt(self.period_sd*self.period_tau/2*(1-math.exp(-2*self.periods[nrn]/self.period_tau)))*rnd.gauss(0,1.0)
 					#while self.periods[nrn] <= 0.0 :
 					#	self.periods[nrn] += (self.period_mu - self.periods[nrn]) * (1.0 - math.exp( - self.neurons[nrn][2]/self.period_tau) ) + rnd.gauss(0,self.period_sd) * math.sqrt(self.neurons[nrn][2])
-				elif self.process == 1 or self.process == 4:
+				elif self.process == 1 or self.process == 5:
 					self.periods[nrn] += (self.period_mu - self.periods[nrn]) * (1.0 - math.exp( - self.neurons[nrn][2]/self.period_tau) ) + rnd.gauss(0,self.period_sd) * math.sqrt(self.periods[nrn]*self.neurons[nrn][2])
 					#while self.periods[nrn] <= 0.0 :
 					#	self.periods[nrn] += (self.period_mu - self.periods[nrn]) * (1.0 - math.exp( - self.neurons[nrn][2]/self.period_tau) ) + rnd.gauss(0,self.period_sd) * math.sqrt(self.periods[nrn]*self.neurons[nrn][2])
 				elif self.process == 2:
 					self.periods[nrn] = rnd.gauss(self.period_mu,self.period_sd*math.sqrt(self.neurons[nrn][2]))
 			else:
-				self.neurons[nrn][0] += model.timetospike/self.periods[nrn]
+				if self.process == 3:
+					self.neurons[nrn][0] += model.timetospike/self.periods[nrn] + rnd.gauss(0,self.period_sd)
+					if self.neurons[nrn][0] > 1: self.neurons[nrn][0] = 1
+				else: # 0 1 2 4 5
+					self.neurons[nrn][0] += model.timetospike/self.periods[nrn]
 				self.op[nrn] = 0
 
 

@@ -57,7 +57,7 @@ class nynrnedt(QtGui.QDialog):
 
 		self.process = QtGui.QComboBox(self)
 #		self.process.addItems(["Ornstein-Uhlenbeck","Feller","Additive noise","Ornstein-Uhlenbeck + resetting","Feller + resetting"])
-		self.process.addItems(["Ornstein-Uhlenbeck","Feller","Additive noise"])
+		self.process.addItems(["Ornstein-Uhlenbeck","Feller","Period Additive noise", "Phase Additive noise"])
 		self.process.setEditable(False)
 		self.process.setCurrentIndex(self.nrn.process)
 
@@ -283,8 +283,8 @@ class nynrnedt(QtGui.QDialog):
 			self.deepck()
 	def procselected(self,proc):
 		self.nrn.process = proc
-		self.tu_periodedit.setVisible(proc != 2)
-		self.label00.setVisible(proc != 2)
+		self.tu_periodedit.setVisible(proc != 2 and proc != 3)
+		self.label00.setVisible(proc != 2 and proc != 3)
 	def ok(self):
 		if not self.upDate(): return
 		self.accept()
