@@ -56,8 +56,8 @@ class nynrnedt(QtGui.QDialog):
 		self.tu_periodedit.setSingleStep(0.1)
 
 		self.process = QtGui.QComboBox(self)
-#		self.process.addItems(["Ornstein-Uhlenbeck","Feller","Ornstein-Uhlenbeck + resetting","Feller + resetting"])
-		self.process.addItems(["Ornstein-Uhlenbeck","Feller"])
+#		self.process.addItems(["Ornstein-Uhlenbeck","Feller","Additive noise","Ornstein-Uhlenbeck + resetting","Feller + resetting"])
+		self.process.addItems(["Ornstein-Uhlenbeck","Feller","Additive noise"])
 		self.process.setEditable(False)
 		self.process.setCurrentIndex(self.nrn.process)
 
@@ -69,6 +69,7 @@ class nynrnedt(QtGui.QDialog):
 		self.initcombo.addItems(["set for all","set randomly","individually"])
 		self.initcombo.setEditable(False)
 		self.initcombo.setCurrentIndex(self.nrn.init_selector)
+		self.label00 =QtGui.QLabel("Tau:")
 
 		self.ph0_alledit = QtGui.QDoubleSpinBox(self)
 		self.ph0_alledit.setValue(self.nrn.ph0_all)
@@ -128,7 +129,7 @@ class nynrnedt(QtGui.QDialog):
 		hbox05.addWidget(self.mu_periodedit )
 		hbox05.addWidget(QtGui.QLabel("SD:"))
 		hbox05.addWidget(self.sd_periodedit )
-		hbox05.addWidget(QtGui.QLabel("Tau:"))
+		hbox05.addWidget(self.label00)
 		hbox05.addWidget(self.tu_periodedit )
 		hbox05.addWidget(QtGui.QLabel("Process:"))
 		hbox05.addWidget(self.process )
@@ -167,6 +168,7 @@ class nynrnedt(QtGui.QDialog):
 		self.connect(self.initcombo, QtCore.SIGNAL('currentIndexChanged (int)'), self.policyselected)
 		self.connect(self.numbedit, QtCore.SIGNAL('valueChanged (int)'), self.numberchanched)
 		self.connect(self.nameedit, QtCore.SIGNAL('editingFinished()'), self.rename)
+		self.connect(self.process, QtCore.SIGNAL('currentIndexChanged (int)'), self.procselected)
 		self.readnrn()
 	def rename(self):
 		if self.nrn == None: self.nrn = odnoisyneurons
@@ -237,6 +239,7 @@ class nynrnedt(QtGui.QDialog):
 				item.setData(0,self.nrn.ph1[row])
 				self.tbl.setItem(row,1,item)
 		self.policyselected(self.nrn.init_selector)
+		self.procselected(self.nrn.process)
 
 		
 	def numberchanched(self, number):
@@ -278,6 +281,10 @@ class nynrnedt(QtGui.QDialog):
 		if item == 2:
 			self.tbl.setVisible(True)
 			self.deepck()
+	def procselected(self,proc):
+		self.nrn.process = proc
+		self.tu_periodedit.setVisible(proc != 2)
+		self.label00.setVisible(proc != 2)
 	def ok(self):
 		if not self.upDate(): return
 		self.accept()
