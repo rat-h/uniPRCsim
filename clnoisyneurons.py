@@ -138,6 +138,7 @@ class clnoisyneurons:
 				elif self.process == 3:
 					
 					self.neurons[nrn][0] -= correction[0] + rnd.gauss(0,self.period_sd)
+					if self.neurons[nrn][0] > 1: self.neurons[nrn][0] = 1
 				else:
 					sys.stderr.write("Name:%s; #:%d; Process:%d; P[n]=%g; ph[n]=%g; cor=%g; =="%(self.name,nrn,self.process,self.periods[nrn],self.neurons[nrn][0], correction[0]) )
 					if self.process == 4:

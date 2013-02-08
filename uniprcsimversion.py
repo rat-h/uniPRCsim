@@ -1,8 +1,8 @@
 
 MAJOR=0
 MINOR=0
-PATCH=38
-DATE="20130201"
+PATCH=39
+DATE="20130208"
 def getversion():
 	return "%d.%02d.%04d"%(MAJOR,MINOR,PATCH)
 def getlongversion():
