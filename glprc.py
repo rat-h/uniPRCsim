@@ -317,21 +317,27 @@ class prceditor(QtGui.QDialog):
 		self.tbl.setHorizontalHeaderLabels(hitem)
 		row = 0
 		self.tbl.setRowCount( len(self.prc.data) )
+		
 		for data in self.prc.data:
 			col = 0
 			item = QtGui.QTableWidgetItem(data[0])
 			item.setData(0,data[0])
 			self.tbl.setItem(row,col,item)
 			for fd in xrange(len(data[1])):
-				col+=1
+	
+				col+=1				
 				item = QtGui.QTableWidgetItem(data[0])
 				item.setData(0,data[1][fd])
 				self.tbl.setItem(row,col,item)
 			for fd in xrange(len(data[2])):
-				col+=1
+				col+=1				
 				item = QtGui.QTableWidgetItem(data[0])
 				item.setData(0,data[2][fd])
 				self.tbl.setItem(row,col,item)
+
+			
+			
+				
 			row += 1
 		self.nameedit.setText(self.prc.name)
 	def insertrow(self):
@@ -446,6 +452,134 @@ class prceditor(QtGui.QDialog):
 			
 	def ok(self):
 		if not self.upDate(): return
+
+		#Will
+		# Check that ph ends with one. If last ph is less than one, prompt user to decide how to add row with ph = 1.
+		
+		lastRow = len(self.prc.data)-1
+		order = 0
+		for iter in xrange(1, len(self.prc.data[0])):
+			if self.prc.data[0][iter] : # Check for empty lists
+				order+=1		
+
+		if float(str(self.prc.data[lastRow][0])) < 1: #ph value is less than one
+			phLessThanOneDialog = QtGui.QInputDialog(self)
+			
+			phLessThanOneDialog.setComboBoxEditable(False)
+			if(order==1):#Fewer options
+				phLessThanOneDialog.setLabelText("The last value for ph is not 1. What would you like to set prc to for ph equal to 1?")
+				phLessThanOneDialog.setComboBoxItems(["Set prcs to zero", "Set prc to prc1(ph = 0)", "Set prc by extrapolation", "Enter decimal prc values"])
+			else :# when second order prc
+				phLessThanOneDialog.setLabelText("The last value for ph is not 1. What would you like to set the prc values to for ph equal to 1?")
+				phLessThanOneDialog.setComboBoxItems(["Set prcs to zero", "Set prcs to prc1(ph = 0)", "Set prc by extrapolation", "Set prcs using prc(ph = 0) values","Set prcs using prc(ph = 0) values but set last prc(1) to zero","Enter decimal prc values"])
+
+			ok = phLessThanOneDialog.exec_()
+			if ok == 0: return
+
+			returned = phLessThanOneDialog.textValue()
+			
+			prcList = list()
+			prcList2 = list()
+			numberOfGsyns = 0
+			if returned == "Set prcs to zero":
+				
+				while(numberOfGsyns < len(self.prc.gsyn)):
+					prcList.append("0.000000")
+					numberOfGsyns +=1
+					
+				if(order==2):
+					numberOfGsyns = 0
+					while(numberOfGsyns < len(self.prc.gsyn)):
+						prcList2.append("0.000000")
+						numberOfGsyns +=1
+			
+			if returned == "Set prc to prc1(ph = 0)":
+				prcList = self.prc.data[0][1][:]
+
+			if returned == "Set prcs to prc1(ph = 0)":
+				prcList = self.prc.data[0][1][:]
+				prcList2 = self.prc.data[0][1][:]
+				
+			if returned == "Set prc by extrapolation":
+				while(numberOfGsyns < len(self.prc.gsyn)):
+					
+					firstValuePRC = float(self.prc.data[lastRow-1][1][numberOfGsyns])
+					firstValuePH = float(self.prc.data[lastRow-1][0])
+					secondValuePRC = float(self.prc.data[lastRow][1][numberOfGsyns])
+					secondValuePH = float(self.prc.data[lastRow][0])
+					differenceBetweenOneAndLastPH = 1-secondValuePH
+					slope = (secondValuePRC - firstValuePRC)/(secondValuePH - firstValuePH)
+					extrapolatedValue = (slope * differenceBetweenOneAndLastPH) + secondValuePRC
+					prcList.append(str(extrapolatedValue))
+					numberOfGsyns +=1
+				if(order==2):
+					numberOfGsyns = 0
+					while(numberOfGsyns < len(self.prc.gsyn)):
+						firstValuePRC = float(self.prc.data[lastRow-1][2][numberOfGsyns])
+						firstValuePH = float(self.prc.data[lastRow-1][0])
+						secondValuePRC = float(self.prc.data[lastRow][2][numberOfGsyns])
+						secondValuePH = float(self.prc.data[lastRow][0])
+						differenceBetweenOneAndLastPH = 1-secondValuePH
+						slope = (secondValuePRC - firstValuePRC)/(secondValuePH - firstValuePH)
+						extrapolatedValue = (slope * differenceBetweenOneAndLastPH) + secondValuePRC
+						prcList2.append(str(extrapolatedValue))
+						numberOfGsyns +=1
+						
+			if returned == "Set prcs using prc(ph = 0) values":
+				prcList = self.prc.data[0][2][:]
+				prcList2 = self.prc.data[0][1][:]
+			
+			if returned == "Set prcs using prc(ph = 0) values but set last prc(1) to zero":
+				prcList = self.prc.data[0][2][:]
+				while(numberOfGsyns < len(self.prc.gsyn)):
+					prcList2.append("0.000000")
+					numberOfGsyns +=1
+				
+			if returned == "Enter decimal prc values":
+				while(numberOfGsyns < len(self.prc.gsyn)):
+					floatEntered = False
+					while(floatEntered == False):
+						userEnterValueDialog = QtGui.QInputDialog(self)
+						userEnterValueDialog.setLabelText("Enter a value for prc(s)")
+						userEnterValueDialog.setComboBoxEditable(True)
+						ok = userEnterValueDialog.exec_()
+						if ok == 0: return
+					
+						try:
+							userEnteredValue = float(userEnterValueDialog.textValue())
+							floatEntered = True
+							prcList.append(str(userEnteredValue))
+							
+						except ValueError:
+							notFloatValueMessage = QtGui.QMessageBox(self)
+							notFloatValueMessage.setText("You must enter a float value.")
+							notFloatValueMessage.exec_()
+					numberOfGsyns +=1
+				if(order==2):
+					numberOfGsyns = 0
+					while(numberOfGsyns < len(self.prc.gsyn)):
+						floatEntered = False
+						while(floatEntered == False):
+							userEnterValueDialog = QtGui.QInputDialog(self)
+							userEnterValueDialog.setLabelText("Enter a value for prc(s)")
+							userEnterValueDialog.setComboBoxEditable(True)
+							ok = userEnterValueDialog.exec_()
+							if ok == 0: return
+						
+							try:
+								userEnteredValue = float(userEnterValueDialog.textValue())
+								floatEntered = True
+								prcList2.append(str(userEnteredValue))
+								
+							except ValueError:
+								notFloatValueMessage = QtGui.QMessageBox(self)
+								notFloatValueMessage.setText("You must enter a float value.")
+								notFloatValueMessage.exec_()
+						numberOfGsyns +=1
+						
+			self.prc.data.append(["1.000000",prcList,prcList2 ])
+
+		#End Will
 		self.accept()
 	def cancel(self):
 		#do something to save
