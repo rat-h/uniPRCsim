@@ -403,7 +403,7 @@ class prceditor(QtGui.QDialog):
 	def deleterow(self):
 		didx = self.tbl.currentRow()
 		if didx < 0 : return
-		self.prc.data = self.prc.data[0:didx-1]+self.prc.data[didx+1:-1]
+		self.prc.data = self.prc.data[0:didx]+self.prc.data[didx+1:-1]
 		self.readprc()
 	def upDate(self):
 		if self.nameedit.text().length() < 1:
@@ -467,10 +467,10 @@ class prceditor(QtGui.QDialog):
 			
 			phLessThanOneDialog.setComboBoxEditable(False)
 			if(order==1):#Fewer options
-				phLessThanOneDialog.setLabelText("The last value for ph is not 1. What would you like to set prc to for ph equal to 1?")
+				phLessThanOneDialog.setLabelText("The last value for the phase (ph) is less than 1. It must be 1 in order for the PRC to work correctly. Provided are some options for fixing this value. What would you like to do?")
 				phLessThanOneDialog.setComboBoxItems(["Set prcs to zero", "Set prc to prc1(ph = 0)", "Set prc by extrapolation", "Enter decimal prc values"])
 			else :# when second order prc
-				phLessThanOneDialog.setLabelText("The last value for ph is not 1. What would you like to set the prc values to for ph equal to 1?")
+				phLessThanOneDialog.setLabelText("The last value for the phase (ph) is less than 1. It must be 1 in order for the PRC to work correctly. Provided are some options for fixing this value. What would you like to do?")
 				phLessThanOneDialog.setComboBoxItems(["Set prcs to zero", "Set prcs to prc1(ph = 0)", "Set prc by extrapolation", "Set prcs using prc(ph = 0) values","Set prcs using prc(ph = 0) values but set last prc(1) to zero","Enter decimal prc values"])
 
 			ok = phLessThanOneDialog.exec_()
@@ -579,6 +579,14 @@ class prceditor(QtGui.QDialog):
 						
 			self.prc.data.append(["1.000000",prcList,prcList2 ])
 
+		if(self.prc.name=="..."):
+			userEnterPRCNameDialog = QtGui.QInputDialog(self)
+			userEnterPRCNameDialog.setLabelText("Enter a name for PRC")
+			userEnterPRCNameDialog.setComboBoxEditable(True)
+			ok = userEnterPRCNameDialog.exec_()
+			if ok == 0: return
+			self.prc.name = userEnterPRCNameDialog.textValue()
+		
 		#End Will
 		self.accept()
 	def cancel(self):
