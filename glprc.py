@@ -467,11 +467,11 @@ class prceditor(QtGui.QDialog):
 			
 			phLessThanOneDialog.setComboBoxEditable(False)
 			if(order==1):#Fewer options
-				phLessThanOneDialog.setLabelText("The last value for the phase (ph) is less than 1. It must be 1 in order for the PRC to work correctly. Provided are some options for fixing this value. What would you like to do?")
-				phLessThanOneDialog.setComboBoxItems(["Set prcs to zero", "Set prc to prc1(ph = 0)", "Set prc by extrapolation", "Enter decimal prc values"])
+				phLessThanOneDialog.setLabelText("The last value for the phase (ph) is less than 1. It must be 1 in order for the uniPRCsim to work correctly.\nProvided are some options for fixing this value.\n\nWhat would you like to do?")
+				phLessThanOneDialog.setComboBoxItems(["Set resetting at ph = 1.0 to zero", "Set resetting at ph = 1.0 to value of resetting at ph = 0", "Set resetting at ph = 1.0 by extrapolation", "Enter decimal value(s) of resetting at at ph = 1.0"])
 			else :# when second order prc
-				phLessThanOneDialog.setLabelText("The last value for the phase (ph) is less than 1. It must be 1 in order for the PRC to work correctly. Provided are some options for fixing this value. What would you like to do?")
-				phLessThanOneDialog.setComboBoxItems(["Set prcs to zero", "Set prcs to prc1(ph = 0)", "Set prc by extrapolation", "Set prcs using prc(ph = 0) values","Set prcs using prc(ph = 0) values but set last prc(1) to zero","Enter decimal prc values"])
+				phLessThanOneDialog.setLabelText("The last value for the phase (ph) is less than 1. It must be 1 in order for the uniPRCsim to work correctly.\nProvided are some options for fixing this value.\n\nWhat would you like to do?")
+				phLessThanOneDialog.setComboBoxItems(["Set first and second order resettings at ph = 1.0 to zero", "Set both order resettings at ph = 1.0 by extrapolation", "Set first order resetting at ph = 1.0 to value of second order at ph = 0.0 and vice verse","Set first order resetting at ph = 1.0 to value of second order at ph = 0.0 and second order resetting at ph = 1 to zero","Enter decimal prc values"])
 
 			ok = phLessThanOneDialog.exec_()
 			if ok == 0: return
