@@ -177,7 +177,8 @@ class prceditor(QtGui.QDialog):
 		cancelButton = QtGui.QPushButton(QtGui.QIcon(':/dialog-cancel.png'),"&Cancel",self)
 		setgButton	 = QtGui.QPushButton(QtGui.QIcon(':/gsyn.png'),"Reset Gsyn",self)
 		clsblButton	 = QtGui.QPushButton(QtGui.QIcon(':/close-tbl.png'),"Close Table",self)
-		insrButton	 = QtGui.QPushButton(QtGui.QIcon(':/insert-row.png'),"Insert Row",self)
+		insRowButton = QtGui.QPushButton(QtGui.QIcon(':/insert-row.png'),"Insert Row",self)
+		insColButton = QtGui.QPushButton(QtGui.QIcon(':/insert-column.png'),"Insert Column",self)
 		delrButton	 = QtGui.QPushButton(QtGui.QIcon(':/remove-row.png'),"Remove Row",self)
 		sortButton   = QtGui.QPushButton(QtGui.QIcon(':/close-tbl.png'),"Resort Table",self)
 		remButton	 = QtGui.QPushButton(QtGui.QIcon(':/remove-all.png'),"Remove All",self)
@@ -194,7 +195,8 @@ class prceditor(QtGui.QDialog):
 		hboxD.addStretch(1)
 		hboxD.addWidget(setgButton)
 		hboxD.addWidget(clsblButton)
-		hboxD.addWidget(insrButton)
+		hboxD.addWidget(insRowButton)
+		hboxD.addWidget(insColButton)
 		hboxD.addWidget(delrButton)
 		hboxD.addWidget(sortButton)
 		hboxD.addWidget(remButton)
@@ -214,7 +216,8 @@ class prceditor(QtGui.QDialog):
 		self.connect(cancelButton, QtCore.SIGNAL('clicked()'), self.cancel)
 		self.connect(setgButton, QtCore.SIGNAL('clicked()'), self.setgsyn)
 		self.connect(clsblButton, QtCore.SIGNAL('clicked()'), self.closetbl)
-		self.connect(insrButton, QtCore.SIGNAL('clicked()'), self.insertrow)
+		self.connect(insRowButton, QtCore.SIGNAL('clicked()'), self.insertrow)
+		self.connect(insColButton, QtCore.SIGNAL('clicked()'), self.insertcol)
 		self.connect(delrButton, QtCore.SIGNAL('clicked()'), self.deleterow)
 		self.connect(sortButton, QtCore.SIGNAL('clicked()'), self.resort)
 		self.connect(remButton, QtCore.SIGNAL('clicked()'), self.clear)
@@ -346,6 +349,26 @@ class prceditor(QtGui.QDialog):
 			self.prc.data[-1][1].append("0.000000")
 		for i in self.prc.data[0][2]:
 			self.prc.data[-1][2].append("0.000000")
+		self.readprc()
+	def insertcol(self):
+		fdil = QtGui.QInputDialog(self)
+		fdil.setLabelText("Select order of new PRC column")
+		fdil.setComboBoxEditable(False)
+		fdil.setComboBoxItems(["first order", "first and second order"])
+		ok = fdil.exec_()
+		function = fdil.textValue()
+		if not ok: return
+		double,ok = QtGui.QInputDialog.getText(self,"PRC Editor","Set gsyn value for column this column" )
+		if not ok: return
+		if function == "first order":
+			for rows in self.prc.data:
+				rows[1].append("x.x")
+		else:
+			self.prc.f2 = True
+			for rows in self.prc.data:
+				rows[1].append("x.x")
+				rows[2].append("x.x")
+		self.prc.gsyn.append(float(double))
 		self.readprc()
 	def closetbl(self):
 		if len(self.prc.data[0][1]) != len(self.prc.data[0][2]): return
