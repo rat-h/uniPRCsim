@@ -402,8 +402,9 @@ class prceditor(QtGui.QDialog):
 		self.tbl.setHorizontalHeaderLabels(hitem)
 	def deleterow(self):
 		didx = self.tbl.currentRow()
+		
 		if didx < 0 : return
-		self.prc.data = self.prc.data[0:didx]+self.prc.data[didx+1:-1]
+		self.prc.data = self.prc.data[0:didx]+self.prc.data[didx+1:]
 		self.readprc()
 	def upDate(self):
 		if self.nameedit.text().length() < 1:
@@ -461,17 +462,143 @@ class prceditor(QtGui.QDialog):
 		for iter in xrange(1, len(self.prc.data[0])):
 			if self.prc.data[0][iter] : # Check for empty lists
 				order+=1		
+		if float(str(self.prc.data[0][0])) > 0: # first ph value is greater than zero
+			checkZeroOrderOneDialogOptions = ["Set resetting at ph = 0.0 to zero", "Set resetting at ph = 0.0 by extrapolation", "Enter decimal value(s) of resetting at ph = 0.0"]
+			#Use fewer options when no value at ph = 1 is found
+			checkZeroOrderTwoDialogFewerOptions = ["Set both order resettings at ph = 0.0 to zero", "Set both order resettings at ph = 1.0 by extrapolation", "Enter decimal value(s) of resetting at ph = 0.0"]
+			checkZeroOrderTwoDialogOptions = ["Set both order resettings at ph = 0.0 to zero", "Set both order resettings at ph = 1.0 by extrapolation", "Set first order resetting at ph = 0.0 to value of second order at ph = 1.0 and vice versa", "Set first order resetting at ph = 0.0 to zero and second order resetting at ph = 0 to value of first order resetting at ph = 1.0", "Enter decimal value(s) of resetting at ph = 0.0"]
+			phGreaterThanZeroDialog = QtGui.QInputDialog(self)
+			phGreaterThanZeroDialog.setComboBoxEditable(False)
+			labelTextGreaterThanZero = "The first value for the phase (ph) is greater than 0. It must be 0 in order for the uniPRCsim to work correctly.\nProvided are some options for fixing this value.\n\nWhat would you like to do?"
+			if(order==1):
+				#print("order is one, doesn't matter if ph at 1 exists")
+				phGreaterThanZeroDialog.setLabelText(labelTextGreaterThanZero)
+				phGreaterThanZeroDialog.setComboBoxItems(checkZeroOrderOneDialogOptions)
+			else:
+				if float(str(self.prc.data[lastRow][0])) < 1:#Use fewer options when no value at ph = 1 is found
+					#print("order 2, ph value of 1 doesn't exist either, offer fewer options")
+					phGreaterThanZeroDialog.setLabelText(labelTextGreaterThanZero)
+					phGreaterThanZeroDialog.setComboBoxItems(checkZeroOrderTwoDialogFewerOptions)
+					
+				else:
+					#print("order 2, ph value of 1 exists and value of zero does not, offer all options")
+					phGreaterThanZeroDialog.setLabelText(labelTextGreaterThanZero)
+					phGreaterThanZeroDialog.setComboBoxItems(checkZeroOrderTwoDialogOptions)
+			ok = phGreaterThanZeroDialog.exec_()
+			if ok == 0: return
 
-		if float(str(self.prc.data[lastRow][0])) < 1: #ph value is less than one
-			phLessThanOneDialog = QtGui.QInputDialog(self)
+			returned = phGreaterThanZeroDialog.textValue()
+			prcList = list()
+			prcList2 = list()
+			numberOfGsyns = 0
+			if returned == str(checkZeroOrderOneDialogOptions[0]) or returned == str(checkZeroOrderTwoDialogFewerOptions[0]) or returned == str(checkZeroOrderTwoDialogOptions):
+				while(numberOfGsyns < len(self.prc.gsyn)):
+					prcList.append("0.000000")
+					numberOfGsyns +=1
+					
+				if(order==2):
+					numberOfGsyns = 0
+					while(numberOfGsyns < len(self.prc.gsyn)):
+						prcList2.append("0.000000")
+						numberOfGsyns +=1
 			
+			if returned == str(checkZeroOrderOneDialogOptions[1]) or returned == str(checkZeroOrderTwoDialogFewerOptions[1]) or returned == str(checkZeroOrderTwoDialogOptions[1]): 
+				while(numberOfGsyns < len(self.prc.gsyn)):
+					
+					firstValuePRC = float(self.prc.data[0][1][numberOfGsyns])
+					firstValuePH = float(self.prc.data[0][0])
+					secondValuePRC = float(self.prc.data[1][1][numberOfGsyns])
+					secondValuePH = float(self.prc.data[1][0])
+					differenceBetweenZeroAndFirstPH = firstValuePH
+					slope = (secondValuePRC - firstValuePRC)/(secondValuePH - firstValuePH)
+					extrapolatedValue = -(slope * differenceBetweenZeroAndFirstPH) + firstValuePRC
+					prcList.append(str(extrapolatedValue))
+					numberOfGsyns +=1
+				if(order==2):
+					numberOfGsyns = 0
+					while(numberOfGsyns < len(self.prc.gsyn)):
+						firstValuePRC = float(self.prc.data[0][2][numberOfGsyns])
+						firstValuePH = float(self.prc.data[0][0])
+						secondValuePRC = float(self.prc.data[1][2][numberOfGsyns])
+						secondValuePH = float(self.prc.data[1][0])
+						differenceBetweenZeroAndFirstPH = firstValuePH
+						slope = (secondValuePRC - firstValuePRC)/(secondValuePH - firstValuePH)
+						extrapolatedValue = -(slope * differenceBetweenZeroAndFirstPH) + firstValuePRC
+						prcList2.append(str(extrapolatedValue))
+						numberOfGsyns +=1
+			
+			if returned == str(checkZeroOrderOneDialogOptions[2]) or returned == str(checkZeroOrderTwoDialogFewerOptions[2]) or returned == str(checkZeroOrderTwoDialogOptions[4]):
+				while(numberOfGsyns < len(self.prc.gsyn)):
+					floatEntered = False
+					while(floatEntered == False):
+						userEnterValueDialog = QtGui.QInputDialog(self)
+						userEnterValueDialog.setLabelText("Enter a value for prc(s)")
+						userEnterValueDialog.setComboBoxEditable(True)
+						ok = userEnterValueDialog.exec_()
+						if ok == 0: return
+					
+						try:
+							userEnteredValue = float(userEnterValueDialog.textValue())
+							floatEntered = True
+							prcList.append(str(userEnteredValue))
+							
+						except ValueError:
+							notFloatValueMessage = QtGui.QMessageBox(self)
+							notFloatValueMessage.setText("You must enter a float value.")
+							notFloatValueMessage.exec_()
+					numberOfGsyns +=1
+				if(order==2):
+					numberOfGsyns = 0
+					while(numberOfGsyns < len(self.prc.gsyn)):
+						floatEntered = False
+						while(floatEntered == False):
+							userEnterValueDialog = QtGui.QInputDialog(self)
+							userEnterValueDialog.setLabelText("Enter a value for prc(s)")
+							userEnterValueDialog.setComboBoxEditable(True)
+							ok = userEnterValueDialog.exec_()
+							if ok == 0: return
+						
+							try:
+								userEnteredValue = float(userEnterValueDialog.textValue())
+								floatEntered = True
+								prcList2.append(str(userEnteredValue))
+								
+							except ValueError:
+								notFloatValueMessage = QtGui.QMessageBox(self)
+								notFloatValueMessage.setText("You must enter a float value.")
+								notFloatValueMessage.exec_()
+						numberOfGsyns +=1
+			if returned == str(checkZeroOrderTwoDialogOptions[2]):
+				#Set first order resetting at ph = 0.0 to value of second order at ph = 1.0 and vice versa
+				prcList = self.prc.data[lastRow][2][:]
+				prcList2 = self.prc.data[lastRow][1][:]
+				
+			if returned == str(checkZeroOrderTwoDialogOptions[3]):
+				#Set first order resetting at ph = 0.0 to zero and second order resetting at ph = 0 to value of first order resetting at ph = 1.0
+				prcList2 = self.prc.data[lastRow][1][:]
+				while(numberOfGsyns < len(self.prc.gsyn)):
+					prcList.append("0.000000")
+					numberOfGsyns +=1
+					
+			self.prc.data.insert(0,["0.000000",prcList,prcList2 ])
+		
+		
+		
+		
+		#Second set of checks for ph value less than one	
+		lastRow = len(self.prc.data)-1
+		if float(str(self.prc.data[lastRow][0])) < 1: #last ph value is less than one
+			checkOneOrderOneDialogOptions = ["Set resetting at ph = 1.0 to zero", "Set resetting at ph = 1.0 to value of resetting at ph = 0", "Set resetting at ph = 1.0 by extrapolation", "Enter decimal value(s) of resetting at ph = 1.0"]
+			checkOneOrderTwoDialogOptions = ["Set first and second order resettings at ph = 1.0 to zero", "Set resetting at ph = 1.0 to value of first order resetting at ph = 0", "Set both order resettings at ph = 1.0 by extrapolation", "Set first order resetting at ph = 1.0 to value of second order at ph = 0.0 and vice versa","Set first order resetting at ph = 1.0 to value of second order at ph = 0.0 and second order resetting at ph = 1 to zero","Enter decimal value(s) of resetting at ph = 1.0"]
+			phLessThanOneDialog = QtGui.QInputDialog(self)
 			phLessThanOneDialog.setComboBoxEditable(False)
+			labelTextLessThanOne = "The last value for the phase (ph) is less than 1. It must be 1 in order for the uniPRCsim to work correctly.\nProvided are some options for fixing this value.\n\nWhat would you like to do?"
 			if(order==1):#Fewer options
-				phLessThanOneDialog.setLabelText("The last value for the phase (ph) is less than 1. It must be 1 in order for the uniPRCsim to work correctly.\nProvided are some options for fixing this value.\n\nWhat would you like to do?")
-				phLessThanOneDialog.setComboBoxItems(["Set resetting at ph = 1.0 to zero", "Set resetting at ph = 1.0 to value of resetting at ph = 0", "Set resetting at ph = 1.0 by extrapolation", "Enter decimal value(s) of resetting at at ph = 1.0"])
+				phLessThanOneDialog.setLabelText(labelTextLessThanOne)
+				phLessThanOneDialog.setComboBoxItems(checkOneOrderOneDialogOptions)
 			else :# when second order prc
-				phLessThanOneDialog.setLabelText("The last value for the phase (ph) is less than 1. It must be 1 in order for the uniPRCsim to work correctly.\nProvided are some options for fixing this value.\n\nWhat would you like to do?")
-				phLessThanOneDialog.setComboBoxItems(["Set first and second order resettings at ph = 1.0 to zero", "Set both order resettings at ph = 1.0 by extrapolation", "Set first order resetting at ph = 1.0 to value of second order at ph = 0.0 and vice verse","Set first order resetting at ph = 1.0 to value of second order at ph = 0.0 and second order resetting at ph = 1 to zero","Enter decimal prc values"])
+				phLessThanOneDialog.setLabelText(labelTextLessThanOne)
+				phLessThanOneDialog.setComboBoxItems(checkOneOrderTwoDialogOptions)
 
 			ok = phLessThanOneDialog.exec_()
 			if ok == 0: return
@@ -481,7 +608,7 @@ class prceditor(QtGui.QDialog):
 			prcList = list()
 			prcList2 = list()
 			numberOfGsyns = 0
-			if returned == "Set prcs to zero":
+			if returned == str(checkOneOrderOneDialogOptions[0]) or returned == str(checkOneOrderTwoDialogOptions[0]):
 				
 				while(numberOfGsyns < len(self.prc.gsyn)):
 					prcList.append("0.000000")
@@ -493,14 +620,14 @@ class prceditor(QtGui.QDialog):
 						prcList2.append("0.000000")
 						numberOfGsyns +=1
 			
-			if returned == "Set prc to prc1(ph = 0)":
+			if returned == str(checkOneOrderOneDialogOptions[1]):
 				prcList = self.prc.data[0][1][:]
 
-			if returned == "Set prcs to prc1(ph = 0)":
+			if returned == str(checkOneOrderTwoDialogOptions[1]):
 				prcList = self.prc.data[0][1][:]
 				prcList2 = self.prc.data[0][1][:]
 				
-			if returned == "Set prc by extrapolation":
+			if returned == str(checkOneOrderOneDialogOptions[2]) or returned == str(checkOneOrderTwoDialogOptions[2]):
 				while(numberOfGsyns < len(self.prc.gsyn)):
 					
 					firstValuePRC = float(self.prc.data[lastRow-1][1][numberOfGsyns])
@@ -525,17 +652,17 @@ class prceditor(QtGui.QDialog):
 						prcList2.append(str(extrapolatedValue))
 						numberOfGsyns +=1
 						
-			if returned == "Set prcs using prc(ph = 0) values":
+			if returned == str(checkOneOrderTwoDialogOptions[3]):
 				prcList = self.prc.data[0][2][:]
 				prcList2 = self.prc.data[0][1][:]
 			
-			if returned == "Set prcs using prc(ph = 0) values but set last prc(1) to zero":
+			if returned == str(checkOneOrderTwoDialogOptions[4]):
 				prcList = self.prc.data[0][2][:]
 				while(numberOfGsyns < len(self.prc.gsyn)):
 					prcList2.append("0.000000")
 					numberOfGsyns +=1
 				
-			if returned == "Enter decimal prc values":
+			if returned == str(checkOneOrderOneDialogOptions[3]) or returned == str(checkOneOrderTwoDialogOptions[5]):
 				while(numberOfGsyns < len(self.prc.gsyn)):
 					floatEntered = False
 					while(floatEntered == False):
