@@ -1,3 +1,26 @@
+##################################
+#
+# glmodel.py
+# Copyright (C) Louisiana State University, Health Sciences Center
+# Written by 2011-2013 Ruben Tikidji-Hamburyan <rth@nisms.krinc.ru>
+#                  Will Coleman 2013 wcole4@lsuhsc.edu
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or (at
+# your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE, GOOD TITLE or
+# NON INFRINGEMENT.  See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#
+###################################
 from PyQt4 import QtGui, QtCore
 from xml.sax import handler, make_parser
 import glprc, glrprc, glpopulation, glneurons, glconnection, glnoisyneurons
@@ -39,7 +62,7 @@ class glmodel:
 		#Open Model
 		openmdl = QtGui.QAction(QtGui.QIcon(':/open.png'), 'Open Model', mainwnd)
 		openmdl.setShortcut('Ctrl+O')
-		openmdl.setStatusTip('Opne Existed Model' )
+		openmdl.setStatusTip('Open Existing Model' )
 		mainwnd.connect(openmdl, QtCore.SIGNAL('triggered()'), self.openmodel)
 		#Save Model
 		savemdl = QtGui.QAction(QtGui.QIcon(':/save.png'), 'Save Model', mainwnd)
@@ -62,7 +85,7 @@ class glmodel:
 
 		showrst = QtGui.QAction(QtGui.QIcon(':/grath.png'), 'Show graths', mainwnd)
 		showrst.setShortcut('Ctrl+S')
-		showrst.setStatusTip('Show grathical outputs')
+		showrst.setStatusTip('Show graphical outputs')
 		mainwnd.connect(showrst, QtCore.SIGNAL('triggered()'), self.show)
 
 		showphs = QtGui.QAction(QtGui.QIcon(':/steadyphases.png'), 'Show phases', mainwnd)
@@ -243,6 +266,34 @@ class glmodel:
 		self.seededit = None
 
 	def runmodel(self):
+		
+		hasWarningMessageBeenDisplayed = 0
+		for con in self.glconnection.cnntlst:
+			for nrn in self.glneurons.nrnlst:
+				gsyn_sum_max = con.gsyn * nrn.number
+				if(con.to == nrn.name):
+					for prc in self.glprc.prclst:
+						order = 0
+						if len(prc.data[0]) == 3:
+							order = 2
+						if len(prc.data[0]) == 2:
+							order = 1
+						if prc.name == con.prc:
+							count=0
+							while(count<order):
+								datum = 0
+								while datum < len(prc.data):
+									if(0> float(prc.data[datum][0]) + (gsyn_sum_max*float(prc.data[datum][count+1][0]))):
+										#print (float(prc.data[datum][0]) + (gsyn_sum_max*float(prc.data[datum][count+1][0])))
+										if(hasWarningMessageBeenDisplayed == 0):
+											reply = QtGui.QMessageBox.warning(self.parent, 'Warning',\
+											"You are about to run a model in which the causal limit has the potential to be crossed.\n\nDo you want to proceed?", \
+											QtGui.QMessageBox.Cancel | QtGui.QMessageBox.Ok, QtGui.QMessageBox.Ok)
+											if reply != QtGui.QMessageBox.Ok: return
+											hasWarningMessageBeenDisplayed = 1
+									datum+=1
+								count += 1
+								
 		if not self.isactive: return
 		saveflg = self.ischanged
 		for comp in self.registered:
@@ -310,7 +361,7 @@ class glmodel:
 		elif name == "model":
 			self.workobj = None
 			if attr.get("version",0) == 0 or attr["version"] != "0.1":
-				QtGui.QMessageBox.critical(self.parent,"Critical ERROR!","Bad version of model\n   ABBORT!   ",QtGui.QMessageBox.Ok,0)
+				QtGui.QMessageBox.critical(self.parent,"Critical ERROR!","Bad version of model\n   ABORT!   ",QtGui.QMessageBox.Ok,0)
 				return
 			if attr.get("name",0): self.name = attr["name"]
 			else:self.name = "<--*-->"
