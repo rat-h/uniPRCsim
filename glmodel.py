@@ -274,24 +274,25 @@ class glmodel:
 				if(con.to == nrn.name):
 					for prc in self.glprc.prclst:
 						order = 0
-						for iter in xrange(1, len(prc.data[0])):
-							if prc.data[0][iter] : # Check for empty lists
-								order+=1
-						if prc.name == con.prc:
-							count=0
-							while(count<order):
-								datum = 0
-								while datum < len(prc.data):
-									if(0> float(prc.data[datum][0]) + (gsyn_sum_max*float(prc.data[datum][count+1][0]))):
-										#print (float(prc.data[datum][0]) + (gsyn_sum_max*float(prc.data[datum][count+1][0])))
-										if(hasWarningMessageBeenDisplayed == 0):
-											reply = QtGui.QMessageBox.warning(self.parent, 'Warning',\
-											"You are about to run a model in which the causal limit has the potential to be crossed.\n\nDo you want to proceed?", \
-											QtGui.QMessageBox.Cancel | QtGui.QMessageBox.Ok, QtGui.QMessageBox.Ok)
-											if reply != QtGui.QMessageBox.Ok: return
-											hasWarningMessageBeenDisplayed = 1
-									datum+=1
-								count += 1
+						if hasattr(prc, 'data'):
+							for iter in xrange(1, len(prc.data[0])):
+								if prc.data[0][iter] : # Check for empty lists
+									order+=1
+							if prc.name == con.prc:
+								count=0
+								while(count<order):
+									datum = 0
+									while datum < len(prc.data):
+										if(0> float(prc.data[datum][0]) + (gsyn_sum_max*float(prc.data[datum][count+1][0]))):
+											#print (float(prc.data[datum][0]) + (gsyn_sum_max*float(prc.data[datum][count+1][0])))
+											if(hasWarningMessageBeenDisplayed == 0):
+												reply = QtGui.QMessageBox.warning(self.parent, 'Warning',\
+												"You are about to run a model in which the causal limit has the potential to be crossed.\n\nDo you want to proceed?", \
+												QtGui.QMessageBox.Cancel | QtGui.QMessageBox.Ok, QtGui.QMessageBox.Ok)
+												if reply != QtGui.QMessageBox.Ok: return
+												hasWarningMessageBeenDisplayed = 1
+										datum+=1
+									count += 1
 
 		if not self.isactive: return
 		saveflg = self.ischanged

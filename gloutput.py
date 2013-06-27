@@ -113,13 +113,13 @@ class rastrwd(QtGui.QWidget):
 		x1 = self.margins[0] + (self.data.data[self.d_len + self.d_left_idx][0] - self.t_left)/self.hscale
 		qp.drawLine(x0,h - self.margins[2],x1, h - self.margins[2])
 		qp.drawLine(x0,h - self.margins[2],x0,h - self.margins[2]+self.margins[3]/2)
-		qp.drawText(QtCore.QRect(x0-self.margins[1],h-self.margins[3],self.margins[1]*2,self.margins[3]),QtCore.Qt.AlignCenter,"%g"%self.data.data[self.d_left_idx][0])
+		qp.drawText(QtCore.QRect(x0-self.margins[1]*2,h-self.margins[3],self.margins[1]*4,self.margins[3]),QtCore.Qt.AlignCenter,"%g"%self.data.data[self.d_left_idx][0])
 		qp.drawLine(x1,h - self.margins[2],x1,h - self.margins[2]+self.margins[3]/2)
-		qp.drawText(QtCore.QRect(x1-self.margins[1],h-self.margins[3],self.margins[1]*2,self.margins[3]),QtCore.Qt.AlignCenter,"%g"%self.data.data[self.d_len + self.d_left_idx][0])
+		qp.drawText(QtCore.QRect(x1-self.margins[1]*3,h-self.margins[3],self.margins[1]*4,self.margins[3]),QtCore.Qt.AlignCenter,"%g"%self.data.data[self.d_len + self.d_left_idx][0])
 		dind = (self.d_len/2 +  self.d_left_idx)
 		x0 = self.margins[0] + (self.data.data[dind][0] - self.t_left)/self.hscale
 		qp.drawLine(x0,h - self.margins[2],x0,h - self.margins[2]+self.margins[3]/2)
-		qp.drawText(QtCore.QRect(x0-self.margins[1],h-self.margins[3],self.margins[1]*2,self.margins[3]),QtCore.Qt.AlignCenter,"%g"%self.data.data[dind][0])
+		qp.drawText(QtCore.QRect(x0-self.margins[1],h-self.margins[3],self.margins[1]*4,self.margins[3]),QtCore.Qt.AlignCenter,"%g"%self.data.data[dind][0])
 		
 		qp.end()
 	def readfile(self, filename):
@@ -242,7 +242,7 @@ class rastrwd(QtGui.QWidget):
 class glraster(QtGui.QDialog):
 	def __init__(self, parent=None):
 		super(glraster, self).__init__()
-		self.setWindowTitle('Rastrview')
+		self.setWindowTitle('Rasterview')
 		screen = QtGui.QDesktopWidget().screenGeometry()
 		self.resize(screen.width()*3/4, screen.height()/2)
 		

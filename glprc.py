@@ -244,6 +244,8 @@ class prceditor(QtGui.QDialog):
 		self.connect(delrButton, QtCore.SIGNAL('clicked()'), self.deleterow)
 		self.connect(sortButton, QtCore.SIGNAL('clicked()'), self.resort)
 		self.connect(remButton, QtCore.SIGNAL('clicked()'), self.clear)
+		self.connect(self.tbl, QtCore.SIGNAL('cellChanged(int, int)'), self.cellUpDate)
+		
 	def setprc(self, prc):
 		if self.prc != None: del self.prc
 		self.prc = prc
@@ -368,9 +370,10 @@ class prceditor(QtGui.QDialog):
 		self.nameedit.setText(self.prc.name)
 	def insertrow(self):
 		self.prc.data.append(["0.000000",[],[] ] )
-		for i in self.prc.data[0][1]:
-			self.prc.data[-1][1].append("0.000000")
-		for i in self.prc.data[0][2]:
+		#for i in self.prc.data[0][1]:
+		self.prc.data[-1][1].append("0.000000")
+		#for i in self.prc.data[0][2]:
+		if self.prc.data[-1][2]: #check for empty list
 			self.prc.data[-1][2].append("0.000000")
 		self.readprc()
 	def insertcol(self):
@@ -391,7 +394,7 @@ class prceditor(QtGui.QDialog):
 			for rows in self.prc.data:
 				rows[1].append("x.x")
 				rows[2].append("x.x")
-		self.prc.gsyn.append(float(double))
+		self.prc.gsyn.append(str(double))
 		self.readprc()
 	def closetbl(self):
 		if len(self.prc.data[0][1]) != len(self.prc.data[0][2]): return
@@ -496,6 +499,11 @@ class prceditor(QtGui.QDialog):
 		self.readprc()
 		return True
 			
+	def cellUpDate(self, x, y):
+		if y>0:
+			self.prc.data[x][y][0] = str(self.tbl.item(x, y).text())
+		else:
+			self.prc.data[x][y] = str(self.tbl.item(x, y).text())
 			
 	def ok(self):
 		if not self.upDate(): return
