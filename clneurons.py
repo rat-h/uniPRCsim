@@ -40,7 +40,7 @@ class clneurons:
 			if atr == "period": continue
 			if atr == "name": continue
 			if atr == "f2": continue
-			sys.stderr.write("Unexpected attribut \'%s\'for tag <neurons>\nABBORT\n\n"%atr)
+			sys.stderr.write("Unexpected attribute \'%s\'for tag <neurons>\nABORT\n\n"%atr)
 			sys.exit(1)
 
 		#### Reset from attrebuts

@@ -83,8 +83,8 @@ class glmodel:
 		runmdl.setStatusTip('Save and Run Model')
 		mainwnd.connect(runmdl, QtCore.SIGNAL('triggered()'), self.runmodel)
 
-		showrst = QtGui.QAction(QtGui.QIcon(':/grath.png'), 'Show graths', mainwnd)
-		showrst.setShortcut('Ctrl+S')
+		showrst = QtGui.QAction(QtGui.QIcon(':/grath.png'), 'Show graphs', mainwnd)
+		showrst.setShortcut('Ctrl+G')
 		showrst.setStatusTip('Show graphical outputs')
 		mainwnd.connect(showrst, QtCore.SIGNAL('triggered()'), self.show)
 
@@ -274,10 +274,9 @@ class glmodel:
 				if(con.to == nrn.name):
 					for prc in self.glprc.prclst:
 						order = 0
-						if len(prc.data[0]) == 3:
-							order = 2
-						if len(prc.data[0]) == 2:
-							order = 1
+						for iter in xrange(1, len(prc.data[0])):
+							if prc.data[0][iter] : # Check for empty lists
+								order+=1
 						if prc.name == con.prc:
 							count=0
 							while(count<order):
@@ -293,7 +292,7 @@ class glmodel:
 											hasWarningMessageBeenDisplayed = 1
 									datum+=1
 								count += 1
-								
+
 		if not self.isactive: return
 		saveflg = self.ischanged
 		for comp in self.registered:

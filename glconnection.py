@@ -66,7 +66,7 @@ class cnntedt(QtGui.QDialog):
 		id = self.prc.findText(self.cnnt.prc)
 		if id < 0:id = 0
 		self.prc .setCurrentIndex(id)
-		self.delck = QtGui.QCheckBox("Set Dalay in...")
+		self.delck = QtGui.QCheckBox("Set Delay in...")
 		self.deledit = QtGui.QDoubleSpinBox(self)
 		self.deledit.setValue(self.cnnt.delay)
 		self.deledit.setMaximum(1000000000.0)

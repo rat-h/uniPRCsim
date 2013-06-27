@@ -36,7 +36,7 @@ class clmodel:
 				if atr == "watch": continue
 				if atr == "name": continue
 				if atr == "connections": continue
-				sys.stderr.write("Unexpected attribut \'%s\'for tag <output>\nABBORT\n\n"%atr)
+				sys.stderr.write("Unexpected attribute \'%s\'for tag <output>\nABORT\n\n"%atr)
 				sys.exit(1)
 			if attr.get("format"):
 				self.format = attr["format"]
@@ -154,10 +154,10 @@ class clmodel:
 	def __init__(self, mode="STD", attr={}):
 		if(not attr.get("version", 0) ) or attr["version"] != "0.1":
 			if mode == "STD":
-				sys.stderr.write("Wrong model forman\nABBORT\n\n");
+				sys.stderr.write("Wrong model forman\nABORT\n\n");
 				sys.exit(1)
 			else:
-				self.error = "Wrong model forman\nABBORT\n\n"
+				self.error = "Wrong model forman\nABORT\n\n"
 				return
 		self.object = "model"
 		self.objlst={}
@@ -224,10 +224,10 @@ class clmodel:
 			self.workobj.startpoint(object,attr)
 		else:
 			if self.mode == "STD":
-				sys.stderr.write("Unexpected tag <%s> in <model> expression\nABBORT\n\n"%object);
+				sys.stderr.write("Unexpected tag <%s> in <model> expression\nABORT\n\n"%object);
 				sys.exit(1)
 			else:
-				self.error ="Unexpected tag <%s> in <model> expression\nABBORT\n\n"%object
+				self.error ="Unexpected tag <%s> in <model> expression\nABORT\n\n"%object
 	def stoppoint(self,object):
 		if self.workobj != None and self.workobj == "simulation" and object == "simulation":
 			self.workobj = None
@@ -241,7 +241,7 @@ class clmodel:
 		elif self.workobj != None:
 			self.workobj.stoppoint(object)
 		else:	
-			sys.stderr.write("Unexpected close tag <%s> in <model> expression\nABBORT\n\n"%object);
+			sys.stderr.write("Unexpected close tag <%s> in <model> expression\nABORT\n\n"%object);
 			sys.exit(1)
 	def find(self,object="",name=""):
 		if object == "" :
@@ -251,10 +251,10 @@ class clmodel:
 			return self.objlst[object][name]
 		else:
 			if self.mode == "STD":
-				sys.stderr.write("FATAL ERROR: Cannot find object <%s name \"%s\" >\nABBORT\n\n"%(object, name) );
+				sys.stderr.write("FATAL ERROR: Cannot find object <%s name \"%s\" >\nABORT\n\n"%(object, name) );
 				sys.exit(1)
 			else:
-				self.error ="FATAL ERROR: Cannot find object <%s name \"%s\" >\nABBORT\n\n"%(object, name)
+				self.error ="FATAL ERROR: Cannot find object <%s name \"%s\" >\nABORT\n\n"%(object, name)
 
 	def write(self):
 		lines=["<model name=\"%s\" version=\"0.1\" >"%self.name]
@@ -295,11 +295,11 @@ class clmodel:
 			if self.timetospike < 0.0 :
 				#print reduce(lambda y,x:y+x.timetospike,neuronlst + connectlst ,[])
 				if self.mode == "STD":
-					sys.stderr.write("At t=%g Mininal Time To Spike less then ZERO!\nABBORT\n\n"%self.elapsed_time)
+					sys.stderr.write("At t=%g Minimal Time To Spike less then ZERO!\nABORT\n\n"%self.elapsed_time)
 					sys.exit(1)
 				else:
 					self.runer_flg = 0
-					self.error = "\nMininal Time To Spike less then ZERO!\nABBORT\nt = %g\n\n"%self.elapsed_time
+					self.error = "\nMinimal Time To Spike less then ZERO!\nABORT\nt = %g\n\n"%self.elapsed_time
 					break
 
 				
