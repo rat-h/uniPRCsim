@@ -307,10 +307,8 @@ class clmodel:
 			self.print_preupdate(neuronlst,connectlst)
 			self.elapsed_time += self.timetospike
 			
-			for idx in xrange( len(neuronlst) ):
-				neuronlst[idx].update(self)
-			for idx in xrange( len(connectlst) ):
-				connectlst[idx].update(self)
+			for idx in neuronlst : idx.update(self)
+			for idx in connectlst: idx.update(self)
 			self.print_postupdate(neuronlst,connectlst)
 
 		if self.runer_flg == 0: return
