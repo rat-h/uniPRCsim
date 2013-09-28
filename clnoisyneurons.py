@@ -198,7 +198,7 @@ class clnoisyneurons:
 					# Deterministic part
 					self.periods[nrn] += (self.period_mu - self.periods[nrn]) * (1.0 - math.exp( - self.neurons[nrn][2]/self.period_tau) )
 					# Stochastic part
-					self.periods[nrn] += math.sqrt(self.period_sd*self.period_tau/2*(1-math.exp(-2*self.periods[nrn]/self.period_tau)))*rnd.gauss(0,1.0)
+					self.periods[nrn] += self.period_sd*math.sqrt(self.period_tau/2*(1-math.exp(-2*self.periods[nrn]/self.period_tau)))*rnd.gauss(0,1.0)
 					#while self.periods[nrn] <= 0.0 :
 					#	self.periods[nrn] += (self.period_mu - self.periods[nrn]) * (1.0 - math.exp( - self.neurons[nrn][2]/self.period_tau) ) + rnd.gauss(0,self.period_sd) * math.sqrt(self.neurons[nrn][2])
 				elif self.process == 1 or self.process == 5:
