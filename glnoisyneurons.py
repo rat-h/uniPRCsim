@@ -80,7 +80,7 @@ class nynrnedt(QtGui.QDialog):
 
 		self.process = QtGui.QComboBox(self)
 #		self.process.addItems(["Ornstein-Uhlenbeck","Feller","Additive noise","Ornstein-Uhlenbeck + resetting","Feller + resetting"])
-		self.process.addItems(["Ornstein-Uhlenbeck","Feller","Period Additive noise", "Phase Additive noise"])
+		self.process.addItems(["Ornstein-Uhlenbeck","Feller","Period Additive noise", "Phase Additive noise","Ornstein-Uhlenbeck with even updates"])
 		self.process.setEditable(False)
 		self.process.setCurrentIndex(self.nrn.process)
 
