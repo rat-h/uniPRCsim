@@ -23,7 +23,7 @@
 ###################################
 from PyQt4 import QtGui, QtCore
 from xml.sax import handler, make_parser
-import glprc, glrprc, glpopulation, glneurons, glconnection, glnoisyneurons
+import glprc, glrprc, glpopulation, glneurons, glconnection, glnoisyneurons, glrepeaters
 import gloutput, glrun, icons
 import glphasetable
 import os
@@ -128,9 +128,10 @@ class glmodel:
 		self.glpopulation = glpopulation.glpopulation( parent=self, mainwnd=mainwnd, menubar=editmu, toolbar=toolbar )
 		self.glneurons = glneurons.glneurons( parent=self, mainwnd=mainwnd, menubar=editmu, toolbar=toolbar )
 		self.glnoisyneurons = glnoisyneurons.glnoisyneurons( parent=self, mainwnd=mainwnd, menubar=editmu, toolbar=toolbar )
+		self.glrepeaters = glrepeaters.glrepeaters( parent=self, mainwnd=mainwnd, menubar=editmu, toolbar=toolbar )
 		self.glconnection = glconnection.glconnection( parent=self, mainwnd=mainwnd, menubar=editmu, toolbar=toolbar )
 		self.gloutput = gloutput.gloutput( parent=self, mainwnd=mainwnd, menubar=editmu, toolbar=toolbar )
-		self.registered = (self.glprc, self.glrprc, self.glpopulation, self.glneurons, self.glnoisyneurons, self.glconnection,self.gloutput)
+		self.registered = (self.glprc, self.glrprc, self.glpopulation, self.glneurons, self.glnoisyneurons,self.glrepeaters,self.glconnection,self.gloutput)
 		editmu.addAction(rmobj)
 		toolbar.addAction(rmobj)
 		toolbar.addSeparator()

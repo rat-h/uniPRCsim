@@ -24,7 +24,7 @@
 import sys, csv
 import random as rnd
 from datetime import time
-import clprc, clrprc, clpopulation, clneurons, clconnection, clnoisyneurons
+import clprc, clrprc, clpopulation, clneurons, clconnection, clnoisyneurons, clrepeaters
 
 class clmodel:
 	class file:
@@ -215,6 +215,13 @@ class clmodel:
 			if not self.objlst.get("neurons", 0):
 				self.objlst["neurons"]={}
 			self.objlst["neurons"][self.workobj.name]= self.workobj			
+#DB>>
+		elif self.workobj == None and object == "repeaters":
+			self.workobj = clrepeaters.clrepeaters(attr=attr)
+			if not self.objlst.get("neurons", 0):
+				self.objlst["neurons"]={}
+			self.objlst["neurons"][self.workobj.name]= self.workobj			
+#<<DB
 		elif self.workobj == None and object == "connection":
 			self.workobj = clconnection.clconnection(find=self.find,attr=attr)
 			if not self.objlst.get("connections", 0):
@@ -274,6 +281,7 @@ class clmodel:
 		connectlst	= [ x[1] for x in connectlst.items() ]
 		self.print_header(neuronlst,connectlst)
 		self.timetospike = 1e19
+		
 		for tos in reduce(lambda y,x:y+x.timetospike,neuronlst + connectlst ,[]):
 			if tos < self.timetospike:
 				self.timetospike = tos
