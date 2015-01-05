@@ -352,7 +352,7 @@ class clmodel:
 		for fl in self.objlst["outputs"]:
 		#print fl.name," ",fl.watch," ",fl.format," "
 			wrd=[]
-			if fl.connections == "off" and (not self.hideout):continue			
+			if fl.connections == "off" and (not self.hideout):continue
 			if fl.watch == "last period" or fl.watch == "spikes" :
 				continue
 			elif fl.watch == "time to spike":
@@ -383,6 +383,12 @@ class clmodel:
 				for  item in neuronlst:
 					for ph in item.neurons:
 						wrd.append(ph[2])
+			elif fl.watch == "intrinsic period" :
+				for  item in neuronlst:
+					if item.object != "noisyneurons":
+						wrd += [ item.period for x in xrange(item.number) ]
+					else :
+						wrd += item.periods
 #					print fl.name," ",fl.watch," ",fl.format," ",wrd
 			fl.write(wrd,attr={"time":self.elapsed_time,"mintos":self.timetospike+self.tos_accomul})
 	def print_postupdate(self,neuronlst,connectlst):
@@ -395,7 +401,7 @@ class clmodel:
 				continue
 			if fl.watch == "phases" or fl.watch == "second correction":
 				continue
-			if fl.watch == "periods" :
+			if fl.watch == "periods" or fl.watch == "intrinsic period"  :
 				continue
 			if fl.connections == "off":
 				for  item in neuronlst:

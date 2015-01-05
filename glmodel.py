@@ -2,8 +2,8 @@
 #
 # glmodel.py
 # Copyright (C) Louisiana State University, Health Sciences Center
-# Written by 2011-2013 Ruben Tikidji-Hamburyan <rth@nisms.krinc.ru>
-#                  Will Coleman 2013 wcole4@lsuhsc.edu
+# Written by 2011-2014 Ruben Tikidji-Hamburyan <rth@nisms.krinc.ru>
+#                      Will Coleman 2013 wcole4@lsuhsc.edu
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

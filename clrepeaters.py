@@ -2,7 +2,7 @@
 #
 # clneurons.py 
 # Copyright (C) Louisiana State University, Health Sciences Center
-# Written by 2011-2013 Ruben Tikidji-Hamburyan <rth@nisms.krinc.ru>
+# Written by 2011-2014 Ruben Tikidji-Hamburyan <rth@nisms.krinc.ru>
 #            
 #
 # This program is free software; you can redistribute it and/or modify
@@ -52,7 +52,8 @@ class clrepeaters:
 		#### Dic of named connections
 		self.connections = {}
 		#### Output buffers
-		self.op = [ 0  ]
+		self.op = [ 0 ]
+		self.period = 1e19
 		self.__lastspike =  0.
 	def startpoint(self,object,attr):
 		#if object == "init" :
@@ -96,17 +97,17 @@ class clrepeaters:
 		return result
 		
 	def calculate(self,model):
+		prespike  = 0
 		for cont in self.connections.items():
-			prespike  = 0
 			for con in cont[1]:
 				prespike += reduce(lambda x,y:x+y, con.op, 0)
-		#DB>>
-		print prespike,"slope:",self.slope,"offset:",self.offset,"==>",
-		#<<DB
 		if prespike > 0:
+			#DB>>
+			#print prespike,"slope:",self.slope,"offset:",self.offset,"x:",model.elapsed_time - self.__lastspike,"({},{})".format(model.elapsed_time,self.__lastspike),"==>",
+			#<<DB
 			self.timetospike = [ (model.elapsed_time - self.__lastspike) * self.slope + self.offset ]
 		#DB>>
-		print self.timetospike
+		#print self.timetospike
 		#<<DB
 
 	def update(self,model):

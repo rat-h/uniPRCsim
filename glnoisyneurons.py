@@ -21,6 +21,20 @@
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #
 ###################################
+#########################################################
+# process:
+# 0 - OUP
+# 1 - Feller
+# 2 - Period Additive noise
+# 3 - Phase Additive noise
+# 4 - OUP + event updates
+# 5 - Play from table
+# 6 - Random choice from table
+# >
+# 100 - OUP + resetting
+# 101 - Feller + resetting
+#########################################################
+
 from PyQt4 import QtGui, QtCore
 import string as str
 import icons
@@ -43,6 +57,7 @@ class odnoisyneurons:
 		self.ph1_sd			= 0.0
 		self.ph0			= []
 		self.ph1			= []
+		self.ptable			= []
 
 class nynrnedt(QtGui.QDialog):
 	def __init__(self, nrn=None, parent=None):
@@ -80,10 +95,10 @@ class nynrnedt(QtGui.QDialog):
 
 		self.process = QtGui.QComboBox(self)
 #		self.process.addItems(["Ornstein-Uhlenbeck","Feller","Additive noise","Ornstein-Uhlenbeck + resetting","Feller + resetting"])
-		self.process.addItems(["Ornstein-Uhlenbeck","Feller","Period Additive noise", "Phase Additive noise","Ornstein-Uhlenbeck with even updates"])
+		self.process.addItems(["Ornstein-Uhlenbeck","Feller","Period Additive noise", "Phase Additive noise","Ornstein-Uhlenbeck with event updates","Play from Table","Random choice from Table"])
 		self.process.setEditable(False)
 		self.process.setCurrentIndex(self.nrn.process)
-
+		
 		self.f2combo = QtGui.QComboBox(self)
 		self.f2combo.addItems(["accumulate","last","off"])
 		self.f2combo.setEditable(False)
@@ -132,8 +147,22 @@ class nynrnedt(QtGui.QDialog):
 		self.tbl.setColumnCount(2)
 		self.tbl.setHorizontalHeaderLabels(["ph","correction"])
 		self.tbl.setVisible(False)
+
 		okButton	 = QtGui.QPushButton(QtGui.QIcon(':/dialog-ok.png'),"&OK",self)
 		cancelButton = QtGui.QPushButton(QtGui.QIcon(':/dialog-cancel.png'),"&Cancel",self)
+
+		self.plabel = QtGui.QLabel("Periods Table")
+		self.ploadbutton = QtGui.QPushButton(QtGui.QIcon(':/import.png'),"Load &Table from File",self)
+		self.pinsertrow  = QtGui.QPushButton(QtGui.QIcon(':/insert-row.png'),"Insert Row",self)
+		self.pdeleterow  = QtGui.QPushButton(QtGui.QIcon(':/remove-row.png'),"Remove Row",self)
+		self.ptbl = QtGui.QTableWidget()
+		self.ptbl.setColumnCount(1)
+		self.ptbl.setHorizontalHeaderLabels(["period"])
+		self.plabel.setVisible(False)
+		self.ploadbutton.setVisible(False)
+		self.pinsertrow.setVisible(False)
+		self.pdeleterow.setVisible(False)
+		self.ptbl.setVisible(False)
 
 		hbox01 = QtGui.QHBoxLayout()
 		hbox01.addWidget(QtGui.QLabel("Name:"))
@@ -156,7 +185,6 @@ class nynrnedt(QtGui.QDialog):
 		hbox05.addWidget(self.tu_periodedit )
 		hbox05.addWidget(QtGui.QLabel("Process:"))
 		hbox05.addWidget(self.process )
-		
 
 		hbox02 = QtGui.QHBoxLayout()
 		hbox02.addWidget(QtGui.QLabel("The second resetting:"))
@@ -177,6 +205,11 @@ class nynrnedt(QtGui.QDialog):
 		hbox04.addWidget(self.label04)
 		hbox04.addWidget(self.ph1_allsdedit)
 		
+		hbox07 = QtGui.QHBoxLayout()
+		hbox07.addWidget(self.plabel)
+		hbox07.addWidget(self.ploadbutton)
+		hbox07.addWidget(self.pinsertrow)
+		hbox07.addWidget(self.pdeleterow)
 
 		vbox = QtGui.QVBoxLayout()
 		vbox.addLayout(hbox01)
@@ -185,6 +218,8 @@ class nynrnedt(QtGui.QDialog):
 		vbox.addLayout(hbox03)
 		vbox.addLayout(hbox04)
 		vbox.addWidget(self.tbl)
+		vbox.addLayout(hbox07)
+		vbox.addWidget(self.ptbl)
 		self.setLayout(vbox)
 		self.connect(okButton, QtCore.SIGNAL('clicked()'), self.ok)
 		self.connect(cancelButton, QtCore.SIGNAL('clicked()'), self.cancel)
@@ -192,6 +227,10 @@ class nynrnedt(QtGui.QDialog):
 		self.connect(self.numbedit, QtCore.SIGNAL('valueChanged (int)'), self.numberchanched)
 		self.connect(self.nameedit, QtCore.SIGNAL('editingFinished()'), self.rename)
 		self.connect(self.process, QtCore.SIGNAL('currentIndexChanged (int)'), self.procselected)
+		self.connect(self.ploadbutton, QtCore.SIGNAL('clicked()'), self.ptablload)
+		self.connect(self.pinsertrow, QtCore.SIGNAL('clicked()'), self.ptablinsert)
+		self.connect(self.pdeleterow, QtCore.SIGNAL('clicked()'), self.ptabldelete)
+		self.connect(self.ptbl, QtCore.SIGNAL('cellChanged(int, int)'), self.perUpDate)
 		self.readnrn()
 	def rename(self):
 		if self.nrn == None: self.nrn = odnoisyneurons
@@ -235,7 +274,19 @@ class nynrnedt(QtGui.QDialog):
 		self.readnrn()
 		self.policyselected(self.nrn.init_selector)
 		return True
-		
+
+	def readptable(self):
+		if len(self.nrn.ptable) == 0:
+			return
+		self.ptbl.setRowCount( len(self.nrn.ptable) )
+		for ind,p in enumerate(self.nrn.ptable):
+			self.ptbl.setItem(ind,0,QtGui.QTableWidgetItem(p))
+			self.ptbl.item(ind,0).setData(0,p)
+			#DB>>
+			#print "IND=",ind,"GET ITEM=",self.ptbl.item(ind,0)
+			#print "TABLE row x col=",self.ptbl.rowCount()," x ",self.ptbl.columnCount()
+			#<<DB
+	
 	def readnrn(self, nrn=None):
 		if nrn != None:
 			self.nrn=nrn
@@ -263,7 +314,7 @@ class nynrnedt(QtGui.QDialog):
 				self.tbl.setItem(row,1,item)
 		self.policyselected(self.nrn.init_selector)
 		self.procselected(self.nrn.process)
-
+		self.readptable()
 		
 	def numberchanched(self, number):
 		self.nrn.number = number
@@ -304,10 +355,46 @@ class nynrnedt(QtGui.QDialog):
 		if item == 2:
 			self.tbl.setVisible(True)
 			self.deepck()
+	
 	def procselected(self,proc):
 		self.nrn.process = proc
 		self.tu_periodedit.setVisible(proc != 2 and proc != 3)
 		self.label00.setVisible(proc != 2 and proc != 3)
+		self.plabel.setVisible(proc == 5 or proc == 6)
+		self.ploadbutton.setVisible(proc == 5 or proc == 6)
+		self.pinsertrow.setVisible(proc == 5 or proc == 6)
+		self.pdeleterow.setVisible(proc == 5 or proc == 6)
+		self.ptbl.setVisible(proc == 5 or proc == 6)
+		self.mu_periodedit.setVisible(proc != 5 and proc != 6)
+		self.sd_periodedit.setVisible(proc != 5 and proc != 6)
+		self.tu_periodedit.setVisible(proc != 5 and proc != 6)
+
+		
+	def ptablload(self):
+		filename = QtGui.QFileDialog.getOpenFileName(self, 'Open file', '',
+		"Data file (*.dat *.data);; Coma Separated Value (*.csv *.CSV)")
+		if len(filename) == 0: return 
+		self.nrn.ptable = []
+		with open(filename,"r") as fd:
+			for l in fd.readlines():
+				d=l[:-1].split(",")[0].split("\t")[0].split(" ")[0]
+				self.nrn.ptable.append(d)
+		self.readptable()
+		return
+	def ptablinsert(self):
+		self.nrn.ptable.append(0)
+		self.readptable()
+		return
+
+	def ptabldelete(self):
+		#didx = self.tbl.currentRow()
+		#if didx < 0 : return
+		#self.prc.data = self.prc.data[0:didx]+self.prc.data[didx+1:]
+		#self.readprc()
+		return
+	def perUpDate(self, idx, c):
+		self.nrn.ptable[idx] = self.ptbl.item(idx,c).data()
+
 	def ok(self):
 		if not self.upDate(): return
 		self.accept()
@@ -344,7 +431,7 @@ class glnoisyneurons:
 		if item.data(1,QtCore.Qt.UserRole) == self.object:
 			nrnid, ok = item.data(2,QtCore.Qt.UserRole).toInt()
 			if not ok:
-				print "Collapes PRC item((("
+				print "Collapes Noise Neurons item((("
 			else:
 				edit.readnrn(nrn=self.nrnlst[nrnid])
 		if not edit.exec_(): return
@@ -398,6 +485,8 @@ class glnoisyneurons:
 				result.append("\t<init ph0_all=\"%g\" ph0_sd=\"%g\" ph1_all=\"%g\" ph1_sd=\"%g\"/>"%(nrn.ph0_all, nrn.ph0_sd, nrn.ph1_all, nrn.ph1_sd))
 			else :
 				result.append("\t<init ph0=\"%s\" ph1=\"%s\" />"%(str.join(nrn.ph0,","), str.join(nrn.ph1,",")) )
+			if len(nrn.ptable) != 0:
+				result.append("\t<periodtable items=\"%s\" />"%str.join(nrn.ptable,","))
 			result.append("</noisyneurons>")
 		self.ischanged	= False
 		return result
@@ -428,6 +517,8 @@ class glnoisyneurons:
 			else:
 				QtGui.QMessageBox.critical(self.mainwnd,"Critical ERROR!","Bad or unexpected subtag <%s> in tag <%s>!"%(name,self.tmpnrn.name),QtGui.QMessageBox.Ok,0)
 				return
+		elif name == "periodtable":
+			self.tmpnrn.ptable = attr["items"].split(",")
 		elif name == self.object:
 			if self.tmpnrn != None:
 				QtGui.QMessageBox.critical(self.mainwnd,"Critical ERROR!","Bad or unexpected tag <%s>!"%name,QtGui.QMessageBox.Ok,0)
@@ -450,7 +541,7 @@ class glnoisyneurons:
 			return
 		
 	def stoppoint(self,name):
-		if name == "init": return
+		if name == "init" or name == "periodtable": return
 		if name == self.object:
 			if self.tmpnrn != None:
 				if self.tmpnrn.pid < 0:

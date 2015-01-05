@@ -2,7 +2,7 @@
 #
 # glenurons.py
 # Copyright (C) Louisiana State University, Health Sciences Center
-# Written by 2011-2013 Ruben Tikidji-Hamburyan <rth@nisms.krinc.ru>
+# Written by 2011-2014 Ruben Tikidji-Hamburyan <rth@nisms.krinc.ru>
 #                  
 #
 # This program is free software; you can redistribute it and/or modify
@@ -117,9 +117,9 @@ class glrepeaters:
 		self.parent		= parent
 		self.mainwnd	= mainwnd
 		self.object		= "repeaters"
-		insertppl = QtGui.QAction(QtGui.QIcon(':/repeaters.png'), 'Insert Neurons', mainwnd)
+		insertppl = QtGui.QAction(QtGui.QIcon(':/repeaters.png'), 'Insert Repeater', mainwnd)
 		insertppl.setShortcut('Alt+R')
-		insertppl.setStatusTip('Insert Set of Neurons')
+		insertppl.setStatusTip('Insert Set of Repeaters')
 		mainwnd.connect(insertppl, QtCore.SIGNAL('triggered()'), self.insert)
 		menu = menubar.addMenu('&Repeaters')
 		menu.addAction(insertppl)
