@@ -393,7 +393,14 @@ class nynrnedt(QtGui.QDialog):
 		#self.readprc()
 		return
 	def perUpDate(self, idx, c):
-		self.nrn.ptable[idx] = self.ptbl.item(idx,c).data()
+		data,ok = self.ptbl.item(idx,c).data(0).toDouble()
+		if not ok:
+			QtGui.QMessageBox.critical(self,"Critical ERROR!","The Row %d isn't an number!"%idx,QtGui.QMessageBox.Ok,0)
+			return False
+		self.nrn.ptable[idx] =  "{}".format(data)
+		#DB>>
+		print "DB: ptable:", self.nrn.ptable
+		#<<DB
 
 	def ok(self):
 		if not self.upDate(): return
