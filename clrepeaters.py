@@ -86,8 +86,8 @@ class clrepeaters:
 			#DB>>
 			#print prespike,"slope:",self.slope,"offset:",self.offset,"x:",model.elapsed_time - self.__lastspike,"({},{})".format(model.elapsed_time,self.__lastspike),"==>",
 			#<<DB
-			tmp = (model.elapsed_time - self.__lastspike) * self.slope + self.offset
-			self.timetospike = [ self.min if tmp < self.min else tmp ]
+			tmp = (model.elapsed_time - self.__lastspike) 
+			self.timetospike = [ tmp * self.slope + self.offset if tmp > self.min else self.offset ]
 		#DB>>
 		#print self.timetospike
 		#<<DB
