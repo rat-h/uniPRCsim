@@ -38,6 +38,7 @@ class clrepeaters:
 			if atr == "offset": continue
 			if atr == "name": continue
 			if atr == "slope": continue
+			if atr == "min": continue
 			sys.stderr.write("Unexpected attribute \'%s\'for tag <repeaters>\nABORT\n\n"%atr)
 			sys.exit(1)
 
@@ -45,6 +46,8 @@ class clrepeaters:
 		if attr.get("slope"):	self.slope = float( attr["slope"] )
 		if attr.get("name"):	self.name = attr["name"]
 		if attr.get("offset"):	self.offset = float(attr["offset"])
+		if attr.get("min"):	self.min = float( attr["min"] )
+		else:			self.min = 0.
 		#Array of neurons the numbers are
 		#	phase, second order correction and	last period
 		self.neurons = [ [0, 0, 0]  ]
@@ -56,22 +59,6 @@ class clrepeaters:
 		self.period = 1e19
 		self.__lastspike =  0.
 	def startpoint(self,object,attr):
-		#if object == "init" :
-			#if attr.get("prespike_all") :
-				#for i in xrange(self.number):
-					#self.timetospike = [ float(attr["prespike_all"])*self.slope+self.offset for x in xrange(self.number) ]
-			#if attr.get("prespike_all") and attr.get("prespike_sd") :
-				#for i in xrange(self.number):
-					#self.timetospike = [ math.abs( rnd.normalvariate(attr["prespike_all"] and attr["prespike_sd"]) )*\
-										#self.slope+self.offset for x in xrange(self.number) ]
-			#for i in xrange(self.number):
-				#self.timetospike[i] = self.period*(1.0 - self.neurons[i][0])
-		#elif object == "saturation":
-			#return
-		#else:
-			#sys.stderr.write("Unexpected tag <%s> in <repeaters> expression\nABBORT\n\n"%object);
-			#sys.exit(1)
-
 		sys.stderr.write("Unexpected tag <%s> in <repeaters> expression\nABBORT\n\n"%object);
 		sys.exit(1)
 
@@ -83,12 +70,6 @@ class clrepeaters:
 			sys.exit(1)
 	def write(self):
 		result=["<repeaters name=\"%s\" offset=\"%g\" slope=\"%g\"/>"%(self.name, self.offset, self.slope)]
-		#for i in xrange(self.number):
-			#result.append(
-				#"\t <condition ph=\"%g\" correction=\"%g\" timetospike=\"%g\" />"
-				#% (self.neurons[i][0],self.neurons[i][1],self.timetospike[i])
-			#)
-		#result.append("</neurons>")
 		return result
 	def getnames(self):
 		result = []
@@ -105,7 +86,8 @@ class clrepeaters:
 			#DB>>
 			#print prespike,"slope:",self.slope,"offset:",self.offset,"x:",model.elapsed_time - self.__lastspike,"({},{})".format(model.elapsed_time,self.__lastspike),"==>",
 			#<<DB
-			self.timetospike = [ (model.elapsed_time - self.__lastspike) * self.slope + self.offset ]
+			tmp = (model.elapsed_time - self.__lastspike) * self.slope + self.offset
+			self.timetospike = [ self.min if tmp < self.min else tmp ]
 		#DB>>
 		#print self.timetospike
 		#<<DB

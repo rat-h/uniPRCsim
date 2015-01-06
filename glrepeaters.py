@@ -32,6 +32,7 @@ class odreadrep:
 		self.name			= ""
 		self.offset			= 0.0
 		self.slope			= 0.0
+		self.min			= 0.0
 
 class repedt(QtGui.QDialog):
 	def __init__(self, rep=None, parent=None):
@@ -56,6 +57,13 @@ class repedt(QtGui.QDialog):
 		self.offsetedit.setDecimals(10)
 		self.offsetedit.setSingleStep(0.1)
 
+		self.minedit = QtGui.QDoubleSpinBox(self)
+		self.minedit.setValue(self.rep.offset)
+		self.minedit.setMaximum(1000000000.0)
+		self.minedit.setMinimum(0.0)
+		self.minedit.setDecimals(10)
+		self.minedit.setSingleStep(0.1)
+
 		okButton	 = QtGui.QPushButton(QtGui.QIcon(':/dialog-ok.png'),"&OK",self)
 		cancelButton = QtGui.QPushButton(QtGui.QIcon(':/dialog-cancel.png'),"&Cancel",self)
 
@@ -68,10 +76,14 @@ class repedt(QtGui.QDialog):
 		hbox01.addStretch(1)
 		hbox01.addWidget(QtGui.QLabel("TS-TR offset:"))
 		hbox01.addWidget(self.offsetedit )
+		hbox01.addWidget(QtGui.QLabel("TR minimal:"))
+		hbox01.addWidget(self.minedit )
 
 		hbox02 = QtGui.QHBoxLayout()
+		#QtGui.QSplitter( QtGui.Horizontal, hbox02).addWidget(okButton).addWidget(cancelButton)
 		hbox02.addWidget(okButton)
 		hbox02.addWidget(cancelButton)
+		
 
 		vbox = QtGui.QVBoxLayout()
 		vbox.addLayout(hbox01)
@@ -94,6 +106,7 @@ class repedt(QtGui.QDialog):
 		
 		self.rep.slope = self.slopeedit.value()
 		self.rep.offset = self.offsetedit.value()
+		self.rep.min = self.minedit.value()
 		self.readrep()
 		return True
 		
@@ -104,6 +117,7 @@ class repedt(QtGui.QDialog):
 		self.nameedit.setText(self.rep.name)
 		self.slopeedit.setValue(self.rep.slope)
 		self.offsetedit.setValue(self.rep.offset)
+		self.minedit.setValue(self.rep.min)
 
 	def ok(self):
 		if not self.upDate(): return
@@ -187,7 +201,7 @@ class glrepeaters:
 		for rep in self.replst:
 			if rep.pid != pid: continue
 			if rep.id == None: continue
-			result.append("<repeaters name=\"%s\" offset=\"%g\" slope=\"%g\"/>"%(rep.name, rep.offset,rep.slope))
+			result.append("<repeaters name=\"%s\" offset=\"%g\" slope=\"%g\" min=\"%g\"/>"%(rep.name, rep.offset,rep.slope,rep.min))
 			#if nrn.init_selector == 0:
 				#result.append("\t<init ph0_all=\"%g\" ph1_all=\"%g\" />"%(nrn.ph0_all, nrn.ph1_all))
 			#elif nrn.init_selector == 1:
@@ -233,6 +247,7 @@ class glrepeaters:
 			if attr.get("name",0): self.tmprep.name = attr["name"]
 			if attr.get("offset", None) != None: self.tmprep.offset = float(attr["offset"])
 			if attr.get("slope",  None) != None: self.tmprep.slope  = float(attr["slope"])
+			if attr.get("min",  None)   != None: self.tmprep.min    = float(attr["min"])
 		else:
 			QtGui.QMessageBox.critical(self.mainwnd,"Critical ERROR!","Bad or unexpected tag <%s>!"%name,QtGui.QMessageBox.Ok,0)
 			return
