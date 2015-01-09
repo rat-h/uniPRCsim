@@ -36,6 +36,7 @@ for arg in sys.argv[1:]:
 		sys.stderr.write("%s [--nogui] [file.pxm]\n\n"%sys.argv[0])
 		sys.stderr.write("%s --version\n"%sys.argv[0])
 		sys.stderr.write("%s --update updatefile\n\n"%sys.argv[0])
+		sys.stderr.write("%s --install updatefile\n\n"%sys.argv[0])
 		sys.exit(0)
 	if arg == "--version" or arg =="-v" or arg == "/version" or arg == "/v" or arg == "/V":
 		import uniprcsimversion
@@ -47,7 +48,8 @@ for arg in sys.argv[1:]:
 		if not os.path.isdir(os.getenv("HOME")+"/.local/lib"):
 			os.mkdir(os.getenv("HOME")+"/.local/lib")
 		BDIR=os.getenv("HOME")+"/.local/lib/uniPRCsim"
-		os.mkdir(BDIR)
+		if not os.path.isdir(BDIR):
+			os.mkdir(BDIR)
 		dsfile = open(BDIR+"/uniPRCsim","w")
 		srfile = open(sys.argv[0],"r")
 		for line in srfile.readlines():

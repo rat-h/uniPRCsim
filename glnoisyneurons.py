@@ -399,7 +399,7 @@ class nynrnedt(QtGui.QDialog):
 			return False
 		self.nrn.ptable[idx] =  "{}".format(data)
 		#DB>>
-		print "DB: ptable:", self.nrn.ptable
+		#print "DB: ptable:", self.nrn.ptable
 		#<<DB
 
 	def ok(self):
