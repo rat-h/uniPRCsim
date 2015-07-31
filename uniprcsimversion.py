@@ -24,7 +24,7 @@
 
 MAJOR=0
 MINOR=0
-PATCH=51
+PATCH=52
 DATE="20150109"
 def getversion():
 	return "%d.%02d.%04d"%(MAJOR,MINOR,PATCH)
@@ -45,7 +45,7 @@ if __name__ == "__main__":
 	os.rename("nuniprcsimversion.py","uniprcsimversion.py")
 	import uniprcsimversion
 
-	if 	os.system("zip -9 uniPRCsim-update%s.z *.py"%getversion()):
+	if 	os.system("zip -9 updates/uniPRCsim-update%s.z *.py"%getversion()):
 		sys.stderr.write("Cannot create zip file\n\n")
 		sys.exit(1)
 	if os.system("git commit -a"):
